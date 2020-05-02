@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:enum_to_string/enum_to_string.dart';
 
 const BACKEND_URL = '***REMOVED***/todo';
-const SCOPE_ID = '7143b762-d5a8-449c-b97a-4f1953dceeb8';
 
 enum Status {
   TODO,
@@ -13,6 +12,11 @@ enum Status {
   DONE
 }
 
+final headers = {
+  'Content-type' : 'application/json', 
+  'Accept': 'application/json',
+};
+
 class Todo {
   String id;
   String name;
@@ -20,26 +24,56 @@ class Todo {
   String description;
   Status state;
 
+  static const ID_KEY = 'id';
+  static const NAME_KEY = 'name';
+  static const SCOPE_ID_KEY = 'scopeId';
+  static const DESCRIPTION_KEY = 'description';
+  static const STATE_KEY = 'state';
+
   Todo({this.id, this.name, this.scopeId, this.description, this.state});
+   
+  Map<String, dynamic> toMap() {
+    var map = new Map<String, String>();
+    if (id != null) {
+      map[ID_KEY] = id;
+    }
+    map[NAME_KEY] = name;
+    map[SCOPE_ID_KEY] = scopeId;
+    map[DESCRIPTION_KEY] = description;
+    map[STATE_KEY] = EnumToString.parse(state);
+ 
+    return map;
+  }
+
+  Future<Todo> post() async {
+    var map = this.toMap();
+    final scopeId = map.remove(SCOPE_ID_KEY);
+    final body = json.encode(map);
+    return http.post("$BACKEND_URL/$scopeId", body: body, headers: headers).then((http.Response response) {
+      if (response.statusCode == 200) {
+        return Todo.fromJson(json.decode(response.body));
+      }
+      throw json.decode(response.body)['message'];
+    });
+  }
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(
-      id: json['id'],
-      name: json['name'],
-      scopeId: json['scopeId'],
-      description: json['description'],
-      state: EnumToString.fromString(Status.values, json['state']),
+      id: json[ID_KEY],
+      name: json[NAME_KEY],
+      scopeId: json[SCOPE_ID_KEY],
+      description: json[DESCRIPTION_KEY],
+      state: EnumToString.fromString(Status.values, json[STATE_KEY]),
     );
   }
 }
 
-Future<List<Todo>> fetchScope() async {
-  final response = await http.get("$BACKEND_URL/$SCOPE_ID");
+Future<List<Todo>> fetchScope(String scopeId) async {
+  final response = await http.get("$BACKEND_URL/$scopeId");
 
   if (response.statusCode == 200) {
     List todos = json.decode(response.body);
     return todos.map((todo) => Todo.fromJson(todo)).toList();
-  } else {
-    throw json.decode(response.body)['message'];
   }
+  throw json.decode(response.body)['message'];
 }

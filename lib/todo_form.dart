@@ -61,11 +61,13 @@ class TodoForm extends StatelessWidget {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: RaisedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState.validate()) {
                           final name = _nameKey.currentState.value;
                           final description = _descriptionKey.currentState.value;
-                          final state = _stateKey.currentState.value;
+                          final state = EnumToString.fromString(Status.values, _stateKey.currentState.value);
+
+                          await Todo(name: name, description: description, state: state, scopeId: '7143b762-d5a8-449c-b97a-4f1953dceeb8').post();
                           Navigator.pop(context);
                         }
                       },
