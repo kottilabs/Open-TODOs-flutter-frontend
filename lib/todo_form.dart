@@ -10,8 +10,7 @@ class TodoForm extends StatelessWidget {
   static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
   static final GlobalKey<FormFieldState<String>> _descriptionKey = new GlobalKey<FormFieldState<String>>();
   static final GlobalKey<FormFieldState<String>> _stateKey = new GlobalKey<FormFieldState<String>>();
-
-  var _stateController = TextEditingController(text: EnumToString.parse(Status.TODO));
+  static final TextEditingController _stateController = TextEditingController(text: EnumToString.parse(Status.TODO));
   
   @override
   Widget build(BuildContext context) {

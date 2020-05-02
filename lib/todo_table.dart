@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'dart:async';
 
 import 'todo.dart';
 
@@ -8,18 +9,26 @@ class TodoTable extends StatefulWidget {
 }
 
 class _TodoTableState extends State<TodoTable> {
-  Future<List<Todo>> futureTodos;
+  Future<List<Todo>> _futureTodos;
+
+  static const SCOPE_ID = '7143b762-d5a8-449c-b97a-4f1953dceeb8';
+
+  void fetchTodos() {
+    setState(() { _futureTodos = fetchScope(SCOPE_ID); });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    futureTodos = fetchScope('7143b762-d5a8-449c-b97a-4f1953dceeb8');
+
+    const threeSecs = const Duration(seconds:3);
+    new Timer.periodic(threeSecs, (Timer t) => this.fetchTodos());
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Todo>>(
-      future: futureTodos, 
+      future: _futureTodos, 
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(
