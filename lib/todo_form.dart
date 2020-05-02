@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 
-class TodoForm extends StatefulWidget {
-  _TodoFormState createState() => _TodoFormState();
-}
+import 'todo.dart';
 
-class _TodoFormState extends State<TodoForm> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class TodoForm extends StatelessWidget {
+
+  static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
+  static final GlobalKey<FormFieldState<String>> _descriptionKey = new GlobalKey<FormFieldState<String>>();
+  static final GlobalKey<FormFieldState<String>> _stateKey = new GlobalKey<FormFieldState<String>>();
+
+  var _stateController = TextEditingController(text: EnumToString.parse(Status.TODO));
   
   @override
   Widget build(BuildContext context) {
@@ -23,6 +28,7 @@ class _TodoFormState extends State<TodoForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
+                  key: _nameKey,
                   decoration: const InputDecoration(
                     hintText: 'Name',
                   ),
@@ -34,17 +40,21 @@ class _TodoFormState extends State<TodoForm> {
                   },
                 ),
                 TextFormField(
+                  key: _descriptionKey,
                   decoration: const InputDecoration(
                     hintText: 'Description',
                   ),
                 ),
-                RaisedButton(
-                  onPressed: () {
+                TextFormField(
+                  controller: _stateController,
+                  key: _stateKey,
+                  decoration: const InputDecoration(
+                    hintText: 'State',
+                  ),
+                  readOnly: true,
+                  onTap: () {
                     _openTodoStatePicker(context);
                   },
-                  child: Text('a'),
-                  color: Colors.white,
-                  textColor: Theme.of(context).accentColor,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 32.0),
@@ -52,10 +62,11 @@ class _TodoFormState extends State<TodoForm> {
                     width: MediaQuery.of(context).size.width,
                     child: RaisedButton(
                       onPressed: () {
-                        // Validate will return true if the form is valid, or false if
-                        // the form is invalid.
                         if (_formKey.currentState.validate()) {
-                          // Process data.
+                          final name = _nameKey.currentState.value;
+                          final description = _descriptionKey.currentState.value;
+                          final state = _stateKey.currentState.value;
+                          Navigator.pop(context);
                         }
                       },
                       child: Text('Submit'),
@@ -72,19 +83,17 @@ class _TodoFormState extends State<TodoForm> {
 
 
   _openTodoStatePicker(BuildContext context) {
-    showCupertinoModalPopup<void>(
+    showCupertinoModalPopup<String>(
       context: context,
       builder: (BuildContext context) {
         return new CupertinoActionSheet(
             message: Text('Choose the status'),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: Text("A"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+            actions: (Status.values.map((status) => CupertinoActionSheetAction(
+              child: Text(EnumToString.parse(status)),
+              onPressed: () {
+                Navigator.of(context).pop(EnumToString.parse(status));
+              },
+            )).toList()),
             cancelButton: CupertinoActionSheetAction(
               child: const Text('Cancel'),
               isDefaultAction: true,
@@ -93,6 +102,8 @@ class _TodoFormState extends State<TodoForm> {
               },
             ));
       },
-    ).then<void>((value) {});
+    ).then<void>((String value) {
+      _stateController.text = value;
+    });
   }
 }
