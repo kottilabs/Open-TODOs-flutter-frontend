@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
+import 'todo.dart';
+import 'todo_form.dart';
+import 'todo_table.dart';
+
 void main() => runApp(OpenTODOs());
 
 class OpenTODOs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'OpenTODOs',
+      title: 'TODOs',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.blue[900],
+        accentColor: Colors.blue,
       ),
-      home: MyHomePage(title: 'OpenTODOs'),
+      home: MyHomePage(title: 'TODOs'),
     );
   }
 }
@@ -26,12 +31,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void _incrementCounter() {
-    setState(() {
-      // Create a TODO
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,20 +38,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Nothing here... Create some TODOs!',
-            ),
-          ],
-        ),
+        child: TodoTable()
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm()));
+        },
         tooltip: 'Create TODO',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
