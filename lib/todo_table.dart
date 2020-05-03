@@ -11,16 +11,20 @@ class TodoTable extends StatefulWidget {
 class _TodoTableState extends State<TodoTable> {
   Future<List<Todo>> _futureTodos;
 
-  void fetchTodos() {
-    setState(() { _futureTodos = fetchScope(Todo.SAMPLE_SCOPE_ID); });
+  Future<List<Todo>> _fetchTodos(String scopeId) {
+    setState(() { _futureTodos = fetchScope(scopeId); });
+    return _futureTodos;
+  }
+
+  Future<void> _handleRefresh() async {
+    await _fetchTodos(Todo.SAMPLE_SCOPE_ID);
+    return null;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    const threeSecs = const Duration(seconds:3);
-    new Timer.periodic(threeSecs, (Timer t) => this.fetchTodos());
+    _fetchTodos(Todo.SAMPLE_SCOPE_ID);
   }
 
   @override
@@ -28,30 +32,35 @@ class _TodoTableState extends State<TodoTable> {
     return FutureBuilder<List<Todo>>(
       future: _futureTodos, 
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  snapshot.data.length > 0
-                    ? DataTable(columns: [
-                      DataColumn(label: Text('Name')),
-                      DataColumn(label: Text('Description')),
-                      DataColumn(label: Text('Status')),
-                    ], rows: snapshot.data.map((todo) => DataRow(
-                      cells: [
-                        DataCell(Text(todo.name)),
-                        DataCell(Text(todo.description)),
-                        DataCell(Text(EnumToString.parse(todo.state))),
-                      ])).toList()
-                    )
-                    : Padding(padding: const EdgeInsets.all(32.0),
-                    child: Text('Nothing here... Create some TODOs!'))
-                ],
-              );
-        } else if (snapshot.hasError) {
+        if (snapshot.hasError) {
           return Text("${snapshot.error}");
+        }
+        if (snapshot.hasData) {
+          return snapshot.data.length > 0
+                    ? RefreshIndicator(child: ListView(children: _getTodos(snapshot.data)), onRefresh: _handleRefresh)
+                    : _getNoElements();
         }
         return CircularProgressIndicator();
     });
+  }
+
+  List<Widget> _getTodos(List<Todo> todos) {
+    var widgets = List<Widget>();
+    todos.forEach((todo) {
+      widgets.add(ListTile(
+        leading: Icon(todo.getProgressIcon()),
+        title: Text(todo.name),
+        trailing: Icon(todo.getIcon()),
+      ));
+      widgets.add(Divider(color: Colors.blueGrey));
+    });
+    return widgets;
+  }
+
+  Widget _getNoElements() {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Text('Nothing here... Create some TODOs!')
+    );
   }
 }
