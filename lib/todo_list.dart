@@ -4,9 +4,8 @@ import 'api/todo.dart';
 import 'todo_form.dart';
 
 class TodoList extends StatefulWidget {
-  TodoList({Key key, this.title}) : super(key: key);
-
-  final String title;
+  final String initialScopeId;
+  const TodoList(this.initialScopeId);
 
   @override
   _TodoListState createState() => _TodoListState();
@@ -14,8 +13,14 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   Future<List<Todo>> _futureTodos;
-  // TODO: this will be injected by either UserDefaults or ScopeList
-  String _scopeId = '6845d178-d8df-4cdd-ab11-b2c84c44e2c6';
+  String _scopeId;
+
+  @override
+  void initState() {
+    _scopeId = widget.initialScopeId;
+    fetchTodos(_scopeId);
+    super.initState();
+  }
 
   Future<List<Todo>> fetchTodos(String scopeId) {
     setState(() { _futureTodos = Todo.fetchTodos(scopeId); });
@@ -32,17 +37,12 @@ class _TodoListState extends State<TodoList> {
   }
 
   @override
-  void initState() {
-    fetchTodos(_scopeId);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Todos'),
       ),
+      drawer: Drawer(),
       body: Center(
         child: FutureBuilder<List<Todo>>(
           future: _futureTodos,
@@ -52,7 +52,7 @@ class _TodoListState extends State<TodoList> {
             } else if (snapshot.hasData) {
               return snapshot.data.length > 0
                 ? RefreshIndicator(child: ListView(children: _getTodos(snapshot.data)), onRefresh: _handleRefresh)
-                : _getNoElements();
+                : _getNoTodos();
             }
             return CircularProgressIndicator();
           })
@@ -84,10 +84,12 @@ class _TodoListState extends State<TodoList> {
   }
 
   void _openTodoForm(Todo todo) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm(callback, todo)));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => TodoForm(callback, todo))
+    );
   }
 
-  Widget _getNoElements() {
+  Widget _getNoTodos() {
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Text('Nothing here... Create some TODOs!')

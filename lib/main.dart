@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'todo_list.dart';
+import 'scope_list.dart';
 
 void main() => runApp(OpenTODOs());
 
@@ -13,7 +13,7 @@ class OpenTODOs extends StatelessWidget {
         primaryColor: Colors.blue[900],
         accentColor: Colors.blue,
       ),
-      home: TodoList(title: 'TODOs'),
+      home: ScopeList(),
     );
   }
 }
