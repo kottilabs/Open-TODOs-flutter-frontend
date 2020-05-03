@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:basic_utils/basic_utils.dart';
 
 import 'api/todo.dart';
 
@@ -19,17 +20,17 @@ class _TodoFormState extends State<TodoForm> {
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
   static final GlobalKey<FormFieldState<String>> _descriptionKey = new GlobalKey<FormFieldState<String>>();
-  static final GlobalKey<FormFieldState<String>> _stateKey = new GlobalKey<FormFieldState<String>>();
 
   static final TextEditingController _nameController = TextEditingController();
   static final TextEditingController _descriptionController = TextEditingController();
-  static final TextEditingController _stateController = TextEditingController();
+
+  Status statusValue;
   
   @override
   void initState() {
     _nameController.text = widget.todo.name;
     _descriptionController.text = widget.todo.description;
-    _stateController.text = EnumToString.parse(widget.todo.state);
+    statusValue = widget.todo.state;
     super.initState();
   }
 
@@ -67,16 +68,22 @@ class _TodoFormState extends State<TodoForm> {
                     hintText: 'Description',
                   ),
                 ),
-                TextFormField(
-                  controller: _stateController,
-                  key: _stateKey,
-                  decoration: const InputDecoration(
-                    hintText: 'State',
+                DropdownButton(
+                  iconSize: 48,
+                  underline: Container(
+                    height: 1, color: Theme.of(context).disabledColor,
                   ),
-                  readOnly: true,
-                  onTap: () {
-                    _openTodoStatePicker(context);
+                  isExpanded: true,
+                  onChanged: (Status newValue) {
+                    setState(() {
+                      statusValue = newValue;
+                    });
                   },
+                  value: statusValue,
+                  items: Status.values.map((status) => DropdownMenuItem(
+                    value: status,
+                    child: Text(StringUtils.capitalize(EnumToString.parse(status))),
+                  )).toList(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 32.0),
@@ -88,7 +95,7 @@ class _TodoFormState extends State<TodoForm> {
                           final todo = widget.todo;
                           todo.name = _nameKey.currentState.value;
                           todo.description = _descriptionKey.currentState.value;
-                          todo.state = EnumToString.fromString(Status.values, _stateKey.currentState.value);
+                          todo.state = statusValue;
 
                           await todo.save();
                           Navigator.pop(context);
@@ -105,31 +112,5 @@ class _TodoFormState extends State<TodoForm> {
         ),
       ),
     );
-  }
-
-
-  _openTodoStatePicker(BuildContext context) {
-    showCupertinoModalPopup<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return new CupertinoActionSheet(
-            message: Text('Choose the status'),
-            actions: (Status.values.map((status) => CupertinoActionSheetAction(
-              child: Text(EnumToString.parse(status)),
-              onPressed: () {
-                Navigator.of(context).pop(EnumToString.parse(status));
-              },
-            )).toList()),
-            cancelButton: CupertinoActionSheetAction(
-              child: const Text('Cancel'),
-              isDefaultAction: true,
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-            ));
-      },
-    ).then<void>((String value) {
-      _stateController.text = value;
-    });
   }
 }
