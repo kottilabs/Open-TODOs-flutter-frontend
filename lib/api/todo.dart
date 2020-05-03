@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
 import 'constants.dart';
+import 'scope.dart';
 
 enum Status { TODO, DOING, TESTING, DONE }
 
@@ -22,10 +23,10 @@ class Todo {
   static const STATE_KEY = 'state';
   static const ICON_KEY = 'icon';
 
-  Todo(String scopeId) {
+  Todo(Scope scope) {
     this.id = null;
     this.name = '';
-    this.scopeId = scopeId;
+    this.scopeId = scope.id;
     this.description = '';
     this.state = Status.TODO;
     this.icon = null;
@@ -113,8 +114,8 @@ class Todo {
     });
   }
 
-  static Future<List<Todo>> fetchTodos(String scopeId) async {
-    final response = await client.get("$BACKEND_URL/todo/$scopeId");
+  static Future<List<Todo>> fetchTodos(Scope scope) async {
+    final response = await client.get("$BACKEND_URL/todo/${scope.id}");
 
     if (response.statusCode == 200) {
       List todos = json.decode(response.body);

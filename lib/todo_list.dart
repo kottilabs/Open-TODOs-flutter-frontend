@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'api/scope.dart';
 import 'api/todo.dart';
 import 'todo_form.dart';
 
 class TodoList extends StatefulWidget {
-  final String initialScopeId;
-  const TodoList(this.initialScopeId);
+  final Scope _initialScope;
+  const TodoList(this._initialScope);
 
   @override
   _TodoListState createState() => _TodoListState();
@@ -13,28 +14,28 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   Future<List<Todo>> _futureTodos;
-  String _scopeId;
+  Scope _scope;
 
   @override
   void initState() {
-    _scopeId = widget.initialScopeId;
-    fetchTodos(_scopeId);
+    _scope = widget._initialScope;
+    fetchTodos(_scope);
     super.initState();
   }
 
-  Future<List<Todo>> fetchTodos(String scopeId) {
+  Future<List<Todo>> fetchTodos(Scope scope) {
     setState(() {
-      _futureTodos = Todo.fetchTodos(scopeId);
+      _futureTodos = Todo.fetchTodos(scope);
     });
     return _futureTodos;
   }
 
   void callback() {
-    fetchTodos(_scopeId);
+    fetchTodos(_scope);
   }
 
   Future<void> _handleRefresh() async {
-    await fetchTodos(_scopeId);
+    await fetchTodos(_scope);
     return null;
   }
 
@@ -65,7 +66,7 @@ class _TodoListState extends State<TodoList> {
               })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _openTodoForm(Todo(_scopeId));
+          _openTodoForm(Todo(_scope));
         },
         tooltip: 'Create TODO',
         child: Icon(Icons.add),

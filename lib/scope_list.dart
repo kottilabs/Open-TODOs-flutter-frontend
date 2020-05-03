@@ -69,7 +69,7 @@ class _ScopeListState extends State<ScopeList> {
         title: Text(scope.name),
         onTap: () {
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => TodoList(scope.id)));
+              MaterialPageRoute(builder: (context) => TodoList(scope)));
         },
       ));
       widgets.add(Divider(color: Theme.of(context).accentColor));
