@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:http_auth/http_auth.dart' as http_auth;
 import 'package:enum_to_string/enum_to_string.dart';
 
-const BACKEND_URL = '***REMOVED***/todo';
+import 'constants.dart';
 
 enum Status {
   TODO,
@@ -12,13 +11,6 @@ enum Status {
   TESTING,
   DONE
 }
-
-final headers = {
-  'Content-type' : 'application/json', 
-  'Accept': 'application/json',
-};
-
-var client = http_auth.BasicAuthClient('***REMOVED***', '***REMOVED***');
 
 class Todo {
   String id;
@@ -104,7 +96,7 @@ class Todo {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return client.post("$BACKEND_URL/$scopeId", body: body, headers: headers).then((Response response) {
+    return client.post("$BACKEND_URL/todo/$scopeId", body: body, headers: headers).then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }
@@ -115,7 +107,7 @@ class Todo {
   Future<Todo> put() async {
     var map = this.toMap();
     final body = json.encode(map);
-    return client.put("$BACKEND_URL/$scopeId/$id", body: body, headers: headers).then((Response response) {
+    return client.put("$BACKEND_URL/todo/$scopeId/$id", body: body, headers: headers).then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }
@@ -124,7 +116,7 @@ class Todo {
   }
 
   static Future<List<Todo>> fetchTodos(String scopeId) async {
-    final response = await client.get("$BACKEND_URL/$scopeId");
+    final response = await client.get("$BACKEND_URL/todo/$scopeId");
 
     if (response.statusCode == 200) {
       List todos = json.decode(response.body);
