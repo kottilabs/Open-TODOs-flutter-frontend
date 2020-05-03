@@ -16,16 +16,18 @@ class TodoForm extends StatefulWidget {
 }
 
 class _TodoFormState extends State<TodoForm> {
-
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
-  static final GlobalKey<FormFieldState<String>> _descriptionKey = new GlobalKey<FormFieldState<String>>();
+  static final GlobalKey<FormFieldState<String>> _nameKey =
+      new GlobalKey<FormFieldState<String>>();
+  static final GlobalKey<FormFieldState<String>> _descriptionKey =
+      new GlobalKey<FormFieldState<String>>();
 
   static final TextEditingController _nameController = TextEditingController();
-  static final TextEditingController _descriptionController = TextEditingController();
+  static final TextEditingController _descriptionController =
+      TextEditingController();
 
   Status statusValue;
-  
+
   @override
   void initState() {
     _nameController.text = widget.todo.name;
@@ -71,7 +73,8 @@ class _TodoFormState extends State<TodoForm> {
                 DropdownButton(
                   iconSize: 48,
                   underline: Container(
-                    height: 1, color: Theme.of(context).disabledColor,
+                    height: 1,
+                    color: Theme.of(context).disabledColor,
                   ),
                   isExpanded: true,
                   onChanged: (Status newValue) {
@@ -80,10 +83,13 @@ class _TodoFormState extends State<TodoForm> {
                     });
                   },
                   value: statusValue,
-                  items: Status.values.map((status) => DropdownMenuItem(
-                    value: status,
-                    child: Text(StringUtils.capitalize(EnumToString.parse(status))),
-                  )).toList(),
+                  items: Status.values
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(StringUtils.capitalize(
+                                EnumToString.parse(status))),
+                          ))
+                      .toList(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 32.0),

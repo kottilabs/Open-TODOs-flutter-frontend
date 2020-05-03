@@ -12,7 +12,9 @@ class _ScopeListState extends State<ScopeList> {
   Future<List<Scope>> _futureScopes;
 
   Future<List<Scope>> fetchScopes() {
-    setState(() { _futureScopes = Scope.fetchScopes(); });
+    setState(() {
+      _futureScopes = Scope.fetchScopes();
+    });
     return _futureScopes;
   }
 
@@ -30,31 +32,34 @@ class _ScopeListState extends State<ScopeList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: AppBar(
-      title: const Text('Scopes'),
-    ),
-    drawer: Drawer(),
-    body: Center(
-        child: FutureBuilder<List<Scope>>(
-          future: _futureScopes,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            } else if (snapshot.hasData) {
-              return snapshot.data.length > 0
-                ? RefreshIndicator(child: ListView(children: _getScopes(snapshot.data)), onRefresh: _handleRefresh)
-                : _getNoScopes();
-            }
-            return CircularProgressIndicator();
-          })
+      appBar: AppBar(
+        title: const Text('Scopes'),
       ),
-    floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        },
+      body: Center(
+          child: FutureBuilder<List<Scope>>(
+              future: _futureScopes,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                } else if (snapshot.hasData) {
+                  return snapshot.data.length > 0
+                      ? RefreshIndicator(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                ListView(children: _getScopes(snapshot.data)),
+                          ),
+                          onRefresh: _handleRefresh)
+                      : _getNoScopes();
+                }
+                return CircularProgressIndicator();
+              })),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
         tooltip: 'Create Scope',
         child: Icon(Icons.add),
       ),
-  );
+    );
   }
 
   List<Widget> _getScopes(List<Scope> scopes) {
@@ -64,8 +69,7 @@ class _ScopeListState extends State<ScopeList> {
         title: Text(scope.name),
         onTap: () {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => TodoList(scope.id))
-          );
+              MaterialPageRoute(builder: (context) => TodoList(scope.id)));
         },
       ));
       widgets.add(Divider(color: Theme.of(context).accentColor));
@@ -75,8 +79,7 @@ class _ScopeListState extends State<ScopeList> {
 
   Widget _getNoScopes() {
     return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Text('Nothing here... Create a Scope!')
-    );
+        padding: const EdgeInsets.all(32.0),
+        child: Text('Nothing here... Create a Scope!'));
   }
 }

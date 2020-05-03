@@ -23,7 +23,9 @@ class _TodoListState extends State<TodoList> {
   }
 
   Future<List<Todo>> fetchTodos(String scopeId) {
-    setState(() { _futureTodos = Todo.fetchTodos(scopeId); });
+    setState(() {
+      _futureTodos = Todo.fetchTodos(scopeId);
+    });
     return _futureTodos;
   }
 
@@ -44,19 +46,23 @@ class _TodoListState extends State<TodoList> {
       ),
       drawer: Drawer(),
       body: Center(
-        child: FutureBuilder<List<Todo>>(
-          future: _futureTodos,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            } else if (snapshot.hasData) {
-              return snapshot.data.length > 0
-                ? RefreshIndicator(child: ListView(children: _getTodos(snapshot.data)), onRefresh: _handleRefresh)
-                : _getNoTodos();
-            }
-            return CircularProgressIndicator();
-          })
-      ),
+          child: FutureBuilder<List<Todo>>(
+              future: _futureTodos,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                } else if (snapshot.hasData) {
+                  return snapshot.data.length > 0
+                      ? RefreshIndicator(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView(children: _getTodos(snapshot.data)),
+                          ),
+                          onRefresh: _handleRefresh)
+                      : _getNoTodos();
+                }
+                return CircularProgressIndicator();
+              })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _openTodoForm(Todo(_scopeId));
@@ -85,14 +91,12 @@ class _TodoListState extends State<TodoList> {
 
   void _openTodoForm(Todo todo) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => TodoForm(callback, todo))
-    );
+        MaterialPageRoute(builder: (context) => TodoForm(callback, todo)));
   }
 
   Widget _getNoTodos() {
     return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Text('Nothing here... Create some TODOs!')
-    );
+        padding: const EdgeInsets.all(32.0),
+        child: Text('Nothing here... Create some TODOs!'));
   }
 }

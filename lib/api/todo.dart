@@ -5,12 +5,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 import 'constants.dart';
 
-enum Status {
-  TODO,
-  DOING,
-  TESTING,
-  DONE
-}
+enum Status { TODO, DOING, TESTING, DONE }
 
 class Todo {
   String id;
@@ -44,7 +39,7 @@ class Todo {
     state = EnumToString.fromString(Status.values, json[STATE_KEY]);
     icon = json[ICON_KEY];
   }
-   
+
   Map<String, dynamic> toMap() {
     var map = new Map<String, String>();
 
@@ -54,7 +49,7 @@ class Todo {
     map[DESCRIPTION_KEY] = description;
     map[STATE_KEY] = EnumToString.parse(state);
     map[ICON_KEY] = icon;
- 
+
     return map;
   }
 
@@ -89,14 +84,15 @@ class Todo {
     } else {
       return post();
     }
-    
   }
 
   Future<Todo> post() async {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return client.post("$BACKEND_URL/todo/$scopeId", body: body, headers: headers).then((Response response) {
+    return client
+        .post("$BACKEND_URL/todo/$scopeId", body: body, headers: headers)
+        .then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }
@@ -107,7 +103,9 @@ class Todo {
   Future<Todo> put() async {
     var map = this.toMap();
     final body = json.encode(map);
-    return client.put("$BACKEND_URL/todo/$scopeId/$id", body: body, headers: headers).then((Response response) {
+    return client
+        .put("$BACKEND_URL/todo/$scopeId/$id", body: body, headers: headers)
+        .then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }

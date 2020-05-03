@@ -23,14 +23,14 @@ class Scope {
     name = json[NAME_KEY];
     parentScope = json[PARENT_SCOPE_KEY];
   }
-   
+
   Map<String, dynamic> toMap() {
     var map = new Map<String, String>();
 
     map[ID_KEY] = id;
     map[NAME_KEY] = name;
     map[PARENT_SCOPE_KEY] = parentScope;
- 
+
     return map;
   }
 
@@ -40,14 +40,15 @@ class Scope {
     } else {
       return post();
     }
-    
   }
 
   Future<Scope> post() async {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return client.post("$BACKEND_URL/scope", body: body, headers: headers).then((Response response) {
+    return client
+        .post("$BACKEND_URL/scope", body: body, headers: headers)
+        .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
       }
@@ -58,7 +59,9 @@ class Scope {
   Future<Scope> put() async {
     var map = this.toMap();
     final body = json.encode(map);
-    return client.put("$BACKEND_URL/scope/$id", body: body, headers: headers).then((Response response) {
+    return client
+        .put("$BACKEND_URL/scope/$id", body: body, headers: headers)
+        .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
       }
