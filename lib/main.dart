@@ -36,6 +36,10 @@ class _TodoListState extends State<TodoList> {
     return _futureTodos;
   }
 
+  void callback() {
+    fetchTodos(Todo.SAMPLE_SCOPE_ID);
+  }
+
   Future<void> _handleRefresh() async {
     await fetchTodos(Todo.SAMPLE_SCOPE_ID);
     return null;
@@ -69,7 +73,7 @@ class _TodoListState extends State<TodoList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm(callback)));
         },
         tooltip: 'Create TODO',
         child: Icon(Icons.add),

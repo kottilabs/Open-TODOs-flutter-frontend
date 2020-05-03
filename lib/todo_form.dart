@@ -4,7 +4,16 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 import 'todo.dart';
 
-class TodoForm extends StatelessWidget {
+class TodoForm extends StatefulWidget {
+  final Function callback;
+
+  TodoForm(this.callback);
+
+  @override
+  _TodoFormState createState() => new _TodoFormState();
+}
+
+class _TodoFormState extends State<TodoForm> {
 
   static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
@@ -68,6 +77,7 @@ class TodoForm extends StatelessWidget {
 
                           await Todo(name: name, description: description, state: state, scopeId: Todo.SAMPLE_SCOPE_ID).post();
                           Navigator.pop(context);
+                          this.widget.callback();
                         }
                       },
                       child: Text('Submit'),
