@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'scope_list.dart';
 
-void main() => runApp(OpenTODOs());
+void main() => runApp(OpenTodos());
 
-class OpenTODOs extends StatelessWidget {
+class OpenTodos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TODOs',
+      title: 'Todos',
       theme: ThemeData(
         primaryColor: Colors.blue[900],
         accentColor: Colors.blue,

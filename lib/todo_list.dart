@@ -73,7 +73,7 @@ class _TodoListState extends State<TodoList> {
         onPressed: () {
           _openTodoForm(Todo(_scope));
         },
-        tooltip: 'Create TODO',
+        tooltip: 'Create Todo',
         child: Icon(Icons.add),
       ),
     );
@@ -103,6 +103,6 @@ class _TodoListState extends State<TodoList> {
   Widget _getNoTodos() {
     return Padding(
         padding: const EdgeInsets.all(32.0),
-        child: Text('Nothing here... Create some TODOs!'));
+        child: Text('Nothing here... Create some Todos!'));
   }
 }

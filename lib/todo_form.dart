@@ -40,7 +40,7 @@ class _TodoFormState extends State<TodoForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create TODO'),
+        title: Text('Create Todo'),
       ),
       body: Center(
         child: Padding(
