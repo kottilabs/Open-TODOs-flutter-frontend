@@ -11,10 +11,8 @@ class TodoTable extends StatefulWidget {
 class _TodoTableState extends State<TodoTable> {
   Future<List<Todo>> _futureTodos;
 
-  static const SCOPE_ID = '7143b762-d5a8-449c-b97a-4f1953dceeb8';
-
   void fetchTodos() {
-    setState(() { _futureTodos = fetchScope(SCOPE_ID); });
+    setState(() { _futureTodos = fetchScope(Todo.SAMPLE_SCOPE_ID); });
   }
 
   @override
@@ -46,7 +44,8 @@ class _TodoTableState extends State<TodoTable> {
                         DataCell(Text(EnumToString.parse(todo.state))),
                       ])).toList()
                     )
-                    : Text('Nothing here... Create some TODOs!'),
+                    : Padding(padding: const EdgeInsets.all(32.0),
+                    child: Text('Nothing here... Create some TODOs!'))
                 ],
               );
         } else if (snapshot.hasError) {

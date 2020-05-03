@@ -30,6 +30,8 @@ class Todo {
   static const DESCRIPTION_KEY = 'description';
   static const STATE_KEY = 'state';
 
+  static const SAMPLE_SCOPE_ID = '6845d178-d8df-4cdd-ab11-b2c84c44e2c6';
+
   Todo({this.id, this.name, this.scopeId, this.description, this.state});
    
   Map<String, dynamic> toMap() {

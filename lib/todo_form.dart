@@ -66,7 +66,7 @@ class TodoForm extends StatelessWidget {
                           final description = _descriptionKey.currentState.value;
                           final state = EnumToString.fromString(Status.values, _stateKey.currentState.value);
 
-                          await Todo(name: name, description: description, state: state, scopeId: '7143b762-d5a8-449c-b97a-4f1953dceeb8').post();
+                          await Todo(name: name, description: description, state: state, scopeId: Todo.SAMPLE_SCOPE_ID).post();
                           Navigator.pop(context);
                         }
                       },
