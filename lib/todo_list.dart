@@ -43,7 +43,12 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todos'),
+        title: Column(
+          children: <Widget>[
+            Text('Todos', textScaleFactor: 1.7*0.618,),
+            Text(_scope.name, textScaleFactor: 1.7*0.382)
+          ],
+        ),
       ),
       drawer: Drawer(),
       body: Center(
