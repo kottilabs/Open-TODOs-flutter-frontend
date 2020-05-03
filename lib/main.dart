@@ -73,7 +73,7 @@ class _TodoListState extends State<TodoList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm(callback)));
+          _openTodoForm(Todo(Todo.SAMPLE_SCOPE_ID));
         },
         tooltip: 'Create TODO',
         child: Icon(Icons.add),
@@ -88,10 +88,17 @@ class _TodoListState extends State<TodoList> {
         leading: Icon(todo.getProgressIcon()),
         title: Text(todo.name),
         trailing: Icon(todo.getIcon()),
+        onTap: () {
+          _openTodoForm(todo);
+        },
       ));
       widgets.add(Divider(color: Colors.blueGrey));
     });
     return widgets;
+  }
+
+  void _openTodoForm(Todo todo) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TodoForm(callback, todo)));
   }
 
   Widget _getNoElements() {

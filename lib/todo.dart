@@ -35,13 +35,28 @@ class Todo {
 
   static const SAMPLE_SCOPE_ID = '6845d178-d8df-4cdd-ab11-b2c84c44e2c6';
 
-  Todo({this.id, this.name, this.scopeId, this.description, this.state, this.icon});
+  Todo(String scopeId) {
+    this.id = null;
+    this.name = '';
+    this.scopeId = scopeId;
+    this.description = '';
+    this.state = Status.TODO;
+    this.icon = null;
+  }
+
+  Todo.fromJson(Map<String, dynamic> json) {
+    id = json[ID_KEY];
+    name = json[NAME_KEY];
+    scopeId = json[SCOPE_ID_KEY];
+    description = json[DESCRIPTION_KEY];
+    state = EnumToString.fromString(Status.values, json[STATE_KEY]);
+    icon = json[ICON_KEY];
+  }
    
   Map<String, dynamic> toMap() {
     var map = new Map<String, String>();
-    if (id != null) {
-      map[ID_KEY] = id;
-    }
+
+    map[ID_KEY] = id;
     map[NAME_KEY] = name;
     map[SCOPE_ID_KEY] = scopeId;
     map[DESCRIPTION_KEY] = description;
@@ -76,9 +91,18 @@ class Todo {
     throw 'Missing icon for $state';
   }
 
+  Future<Todo> save() async {
+    if (id != null) {
+      return put();
+    } else {
+      return post();
+    }
+    
+  }
+
   Future<Todo> post() async {
     var map = this.toMap();
-    final scopeId = map.remove(SCOPE_ID_KEY);
+    map.remove(ID_KEY);
     final body = json.encode(map);
     return http.post("$BACKEND_URL/$scopeId", body: body, headers: headers).then((http.Response response) {
       if (response.statusCode == 200) {
@@ -88,15 +112,15 @@ class Todo {
     });
   }
 
-  factory Todo.fromJson(Map<String, dynamic> json) {
-    return Todo(
-      id: json[ID_KEY],
-      name: json[NAME_KEY],
-      scopeId: json[SCOPE_ID_KEY],
-      description: json[DESCRIPTION_KEY],
-      state: EnumToString.fromString(Status.values, json[STATE_KEY]),
-      icon: json[ICON_KEY],
-    );
+  Future<Todo> put() async {
+    var map = this.toMap();
+    final body = json.encode(map);
+    return http.put("$BACKEND_URL/$scopeId/$id", body: body, headers: headers).then((http.Response response) {
+      if (response.statusCode == 200) {
+        return Todo.fromJson(json.decode(response.body));
+      }
+      throw json.decode(response.body)['message'];
+    });
   }
 }
 

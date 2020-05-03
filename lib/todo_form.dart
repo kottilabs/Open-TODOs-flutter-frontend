@@ -6,8 +6,9 @@ import 'todo.dart';
 
 class TodoForm extends StatefulWidget {
   final Function callback;
+  final Todo todo;
 
-  TodoForm(this.callback);
+  TodoForm(this.callback, this.todo);
 
   @override
   _TodoFormState createState() => new _TodoFormState();
@@ -19,8 +20,19 @@ class _TodoFormState extends State<TodoForm> {
   static final GlobalKey<FormFieldState<String>> _nameKey = new GlobalKey<FormFieldState<String>>();
   static final GlobalKey<FormFieldState<String>> _descriptionKey = new GlobalKey<FormFieldState<String>>();
   static final GlobalKey<FormFieldState<String>> _stateKey = new GlobalKey<FormFieldState<String>>();
-  static final TextEditingController _stateController = TextEditingController(text: EnumToString.parse(Status.TODO));
+
+  static final TextEditingController _nameController = TextEditingController();
+  static final TextEditingController _descriptionController = TextEditingController();
+  static final TextEditingController _stateController = TextEditingController();
   
+  @override
+  void initState() {
+    _nameController.text = widget.todo.name;
+    _descriptionController.text = widget.todo.description;
+    _stateController.text = EnumToString.parse(widget.todo.state);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +49,7 @@ class _TodoFormState extends State<TodoForm> {
               children: <Widget>[
                 TextFormField(
                   key: _nameKey,
+                  controller: _nameController,
                   decoration: const InputDecoration(
                     hintText: 'Name',
                   ),
@@ -49,6 +62,7 @@ class _TodoFormState extends State<TodoForm> {
                 ),
                 TextFormField(
                   key: _descriptionKey,
+                  controller: _descriptionController,
                   decoration: const InputDecoration(
                     hintText: 'Description',
                   ),
@@ -71,11 +85,12 @@ class _TodoFormState extends State<TodoForm> {
                     child: RaisedButton(
                       onPressed: () async {
                         if (_formKey.currentState.validate()) {
-                          final name = _nameKey.currentState.value;
-                          final description = _descriptionKey.currentState.value;
-                          final state = EnumToString.fromString(Status.values, _stateKey.currentState.value);
+                          final todo = widget.todo;
+                          todo.name = _nameKey.currentState.value;
+                          todo.description = _descriptionKey.currentState.value;
+                          todo.state = EnumToString.fromString(Status.values, _stateKey.currentState.value);
 
-                          await Todo(name: name, description: description, state: state, scopeId: Todo.SAMPLE_SCOPE_ID).post();
+                          await todo.save();
                           Navigator.pop(context);
                           this.widget.callback();
                         }
