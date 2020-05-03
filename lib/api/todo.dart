@@ -32,6 +32,10 @@ class Todo {
     this.icon = null;
   }
 
+  bool isPersisted() {
+    return id != null;
+  }
+
   Todo.fromJson(Map<String, dynamic> json) {
     id = json[ID_KEY];
     name = json[NAME_KEY];
