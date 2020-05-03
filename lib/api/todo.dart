@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:http_auth/http_auth.dart' as http_auth;
 import 'package:enum_to_string/enum_to_string.dart';
 
 const BACKEND_URL = '***REMOVED***/todo';
@@ -18,6 +18,8 @@ final headers = {
   'Accept': 'application/json',
 };
 
+var client = http_auth.BasicAuthClient('***REMOVED***', '***REMOVED***');
+
 class Todo {
   String id;
   String name;
@@ -32,8 +34,6 @@ class Todo {
   static const DESCRIPTION_KEY = 'description';
   static const STATE_KEY = 'state';
   static const ICON_KEY = 'icon';
-
-  static const SAMPLE_SCOPE_ID = '6845d178-d8df-4cdd-ab11-b2c84c44e2c6';
 
   Todo(String scopeId) {
     this.id = null;
@@ -104,7 +104,7 @@ class Todo {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return http.post("$BACKEND_URL/$scopeId", body: body, headers: headers).then((http.Response response) {
+    return client.post("$BACKEND_URL/$scopeId", body: body, headers: headers).then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }
@@ -115,21 +115,21 @@ class Todo {
   Future<Todo> put() async {
     var map = this.toMap();
     final body = json.encode(map);
-    return http.put("$BACKEND_URL/$scopeId/$id", body: body, headers: headers).then((http.Response response) {
+    return client.put("$BACKEND_URL/$scopeId/$id", body: body, headers: headers).then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
       }
       throw json.decode(response.body)['message'];
     });
   }
-}
 
-Future<List<Todo>> fetchScope(String scopeId) async {
-  final response = await http.get("$BACKEND_URL/$scopeId");
+  static Future<List<Todo>> fetchTodos(String scopeId) async {
+    final response = await client.get("$BACKEND_URL/$scopeId");
 
-  if (response.statusCode == 200) {
-    List todos = json.decode(response.body);
-    return todos.map((todo) => Todo.fromJson(todo)).toList();
+    if (response.statusCode == 200) {
+      List todos = json.decode(response.body);
+      return todos.map((todo) => Todo.fromJson(todo)).toList();
+    }
+    throw json.decode(response.body)['message'];
   }
-  throw json.decode(response.body)['message'];
 }
