@@ -1,10 +1,12 @@
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
-import 'constants.dart';
-import 'scope.dart';
+import 'package:open_todos_flutter_frontend/api/scope.dart';
+import 'package:open_todos_flutter_frontend/api_service.dart';
 
 enum Status { TODO, DOING, TESTING, DONE }
 
@@ -83,20 +85,21 @@ class Todo {
     throw 'Missing icon for $state';
   }
 
-  Future<Todo> save() async {
+  Future<Todo> save(APIService service) {
     if (id != null) {
-      return put();
+      return put(service);
     } else {
-      return post();
+      return post(service);
     }
   }
 
-  Future<Todo> post() async {
+  Future<Todo> post(APIService service) {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return client
-        .post("$BACKEND_URL/todo/$scopeId", body: body, headers: headers)
+    return service
+        .post("${APIService.BACKEND_URL}/todo/$scopeId",
+            body: body, headers: APIService.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
@@ -105,11 +108,12 @@ class Todo {
     });
   }
 
-  Future<Todo> put() async {
+  Future<Todo> put(APIService service) {
     var map = this.toMap();
     final body = json.encode(map);
-    return client
-        .put("$BACKEND_URL/todo/$scopeId/$id", body: body, headers: headers)
+    return service
+        .put("${APIService.BACKEND_URL}/todo/$scopeId/$id",
+            body: body, headers: APIService.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
@@ -118,13 +122,15 @@ class Todo {
     });
   }
 
-  static Future<List<Todo>> fetchTodos(Scope scope) async {
-    final response = await client.get("$BACKEND_URL/todo/${scope.id}");
-
-    if (response.statusCode == 200) {
-      List todos = json.decode(response.body);
-      return todos.map((todo) => Todo.fromJson(todo)).toList();
-    }
-    throw json.decode(response.body)['message'];
+  static Future<List<Todo>> fetchTodos(APIService service, Scope scope) {
+    return service
+        .get("${APIService.BACKEND_URL}/todo/${scope.id}")
+        .then((response) {
+      if (response.statusCode == 200) {
+        List todos = json.decode(response.body);
+        return todos.map((todo) => Todo.fromJson(todo)).toList();
+      }
+      throw json.decode(response.body)['message'];
+    });
   }
 }

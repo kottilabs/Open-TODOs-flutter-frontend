@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:basic_utils/basic_utils.dart';
+import 'package:open_todos_flutter_frontend/api_service.dart';
 
 import 'api/todo.dart';
 
@@ -38,85 +41,90 @@ class _TodoFormState extends State<TodoForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.todo.isPersisted() ? 'Update Todo' : 'Create Todo'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  key: _nameKey,
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Name',
+    final apiService = context.watch<APIService>();
+    return LoginScreenBuilder(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          title:
+              Text(widget.todo.isPersisted() ? 'Update Todo' : 'Create Todo'),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TextFormField(
+                    key: _nameKey,
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Name',
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter a name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter a name';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  key: _descriptionKey,
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    hintText: 'Description',
-                  ),
-                ),
-                DropdownButton(
-                  iconSize: 48,
-                  underline: Container(
-                    height: 1,
-                    color: Theme.of(context).disabledColor,
-                  ),
-                  isExpanded: true,
-                  onChanged: (Status newValue) {
-                    setState(() {
-                      statusValue = newValue;
-                    });
-                  },
-                  value: statusValue,
-                  items: Status.values
-                      .map((status) => DropdownMenuItem(
-                            value: status,
-                            child: Text(StringUtils.capitalize(
-                                EnumToString.parse(status))),
-                          ))
-                      .toList(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 32.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          final todo = widget.todo;
-                          todo.name = _nameKey.currentState.value;
-                          todo.description = _descriptionKey.currentState.value;
-                          todo.state = statusValue;
-
-                          await todo.save();
-                          Navigator.pop(context);
-                          this.widget.callback();
-                        }
-                      },
-                      child: Text('Submit'),
+                  TextFormField(
+                    key: _descriptionKey,
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      hintText: 'Description',
                     ),
                   ),
-                ),
-              ],
+                  DropdownButton(
+                    iconSize: 48,
+                    underline: Container(
+                      height: 1,
+                      color: Theme.of(context).disabledColor,
+                    ),
+                    isExpanded: true,
+                    onChanged: (Status newValue) {
+                      setState(() {
+                        statusValue = newValue;
+                      });
+                    },
+                    value: statusValue,
+                    items: Status.values
+                        .map((status) => DropdownMenuItem(
+                              value: status,
+                              child: Text(StringUtils.capitalize(
+                                  EnumToString.parse(status))),
+                            ))
+                        .toList(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 32.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: RaisedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState.validate()) {
+                            final todo = widget.todo;
+                            todo.name = _nameKey.currentState.value;
+                            todo.description =
+                                _descriptionKey.currentState.value;
+                            todo.state = statusValue;
+
+                            await todo.save(apiService);
+                            Navigator.pop(context);
+                            this.widget.callback();
+                          }
+                        },
+                        child: Text('Submit'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

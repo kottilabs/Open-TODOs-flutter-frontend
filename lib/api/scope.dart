@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart';
-
-import 'constants.dart';
+import 'package:open_todos_flutter_frontend/api_service.dart';
 
 class Scope {
   String id;
@@ -34,20 +34,21 @@ class Scope {
     return map;
   }
 
-  Future<Scope> save() async {
+  Future<Scope> save(APIService service) {
     if (id != null) {
-      return put();
+      return put(service);
     } else {
-      return post();
+      return post(service);
     }
   }
 
-  Future<Scope> post() async {
+  Future<Scope> post(APIService service) {
     var map = this.toMap();
     map.remove(ID_KEY);
     final body = json.encode(map);
-    return client
-        .post("$BACKEND_URL/scope", body: body, headers: headers)
+    return service
+        .post("${APIService.BACKEND_URL}/scope",
+            body: body, headers: APIService.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
@@ -56,11 +57,12 @@ class Scope {
     });
   }
 
-  Future<Scope> put() async {
+  Future<Scope> put(APIService service) {
     var map = this.toMap();
     final body = json.encode(map);
-    return client
-        .put("$BACKEND_URL/scope/$id", body: body, headers: headers)
+    return service
+        .put("${APIService.BACKEND_URL}/scope/$id",
+            body: body, headers: APIService.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
@@ -69,13 +71,13 @@ class Scope {
     });
   }
 
-  static Future<List<Scope>> fetchScopes() async {
-    final response = await client.get("$BACKEND_URL/scope");
-
-    if (response.statusCode == 200) {
-      List todos = json.decode(response.body);
-      return todos.map((todo) => Scope.fromJson(todo)).toList();
-    }
-    throw json.decode(response.body)['message'];
+  static Future<List<Scope>> fetchScopes(APIService service) {
+    return service.get("${APIService.BACKEND_URL}/scope").then((response) {
+      if (response.statusCode == 200) {
+        List todos = json.decode(response.body);
+        return todos.map((todo) => Scope.fromJson(todo)).toList();
+      }
+      throw json.decode(response.body)['message'];
+    });
   }
 }
