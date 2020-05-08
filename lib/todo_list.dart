@@ -58,7 +58,15 @@ class _TodoListState extends State<TodoList> {
               ],
             ),
           ),
-          drawer: Drawer(),
+          drawer: Drawer(
+            child: ListView(children: [
+              ListTile(
+                leading: Icon(Icons.signal_wifi_off),
+                title: Text('Logout'),
+                onTap: () => apiService.logOut(),
+              )
+            ]),
+          ),
           body: Center(
               child: FutureBuilder<List<Todo>>(
                   future: _futureTodos,
