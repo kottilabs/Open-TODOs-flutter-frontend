@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/api/scope.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:open_todos_flutter_frontend/api/scope.dart';
+import 'package:open_todos_flutter_frontend/api_service.dart';
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
 
 class TodoDrawer extends StatelessWidget {
@@ -11,25 +11,40 @@ class TodoDrawer extends StatelessWidget {
     final apiService = context.watch<APIService>();
     final scopes = context.watch<Scopes>();
     return Drawer(
-      child: ListView(children: [
-        DrawerHeader(
-            child:
-                Text('Scopes', style: Theme.of(context).textTheme.headline5)),
-        FutureBuilder(
+      child: FutureBuilder(
+        future: context.watch<APIService>().loggedIn(),
+        builder: (context, tokenSnapshot) => FutureBuilder(
             future: scopes.fetchScopes(),
-            builder: (_, snapshot) {
-              if (snapshot.hasData) {
-                List<Scope> scopes = snapshot.data;
-                return ListTile(title: Text('abc'));
+            builder: (context, scopesSnapshot) {
+              List<Widget> children = [];
+              if (scopesSnapshot.hasData) {
+                List<Scope> scopes = scopesSnapshot.data;
+                children.add(DrawerHeader(
+                    child: Text('Scopes',
+                        style: Theme.of(context).textTheme.headline5)));
+                children.addAll(scopes.map((e) => ListTile(
+                      title: Text(e.name),
+                    )));
+              } else if (!scopesSnapshot.hasError) {
+                children.add(ListTile(title: CircularProgressIndicator()));
+              } else {
+                // TODO: retry
               }
-              return Center(child: CircularProgressIndicator());
+
+              if (!tokenSnapshot.hasError &&
+                  tokenSnapshot.hasData &&
+                  tokenSnapshot.data) {
+                children.add(Divider());
+                children.add(ListTile(
+                  trailing: Icon(Icons.exit_to_app),
+                  title: Text('Logout'),
+                  onTap: () => apiService.logOut(),
+                ));
+              }
+
+              return ListView(children: children);
             }),
-        ListTile(
-          trailing: Icon(Icons.exit_to_app),
-          title: Text('Logout'),
-          onTap: () => apiService.logOut(),
-        )
-      ]),
+      ),
     );
   }
 }
