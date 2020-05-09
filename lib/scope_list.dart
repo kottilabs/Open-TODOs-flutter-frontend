@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_todos_flutter_frontend/scope_form.dart';
 import 'package:open_todos_flutter_frontend/todo_drawer.dart';
 import 'package:provider/provider.dart';
 
@@ -20,11 +21,6 @@ class _ScopeListState extends State<ScopeList> {
       _futureScopes = scopes.fetchScopes();
     });
     return _futureScopes;
-  }
-
-  Future<void> _handleRefresh(Scopes scopes) async {
-    await fetchAndSetScopes(scopes);
-    return null;
   }
 
   @override
@@ -51,15 +47,17 @@ class _ScopeListState extends State<ScopeList> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ListView(
-                                  children: _getScopeWidgets(snapshot.data, scopes)),
+                                  children:
+                                      _getScopeWidgets(snapshot.data, scopes)),
                             ),
-                            onRefresh: () => _handleRefresh(scopes))
+                            onRefresh: () => fetchAndSetScopes(scopes))
                         : _getNoScopes();
                   }
                   return CircularProgressIndicator();
                 })),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () => ScopeForm.pushOnContext(
+              context, () => fetchAndSetScopes(scopes), Scope(null)),
           tooltip: 'Create Scope',
           child: Icon(Icons.add),
         ),

@@ -69,4 +69,8 @@ class Scope {
       throw json.decode(response.body)['message'];
     });
   }
+
+  isPersisted() {
+    return id != null;
+  }
 }

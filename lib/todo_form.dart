@@ -16,6 +16,13 @@ class TodoForm extends StatefulWidget {
 
   @override
   _TodoFormState createState() => new _TodoFormState();
+
+  static TodoForm pushOnContext(context, callback, todo) {
+    final todoForm = TodoForm(callback, todo);
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => todoForm));
+    return todoForm;
+  }
 }
 
 class _TodoFormState extends State<TodoForm> {

@@ -63,9 +63,8 @@ class _TodoListState extends State<TodoList> {
                     return CircularProgressIndicator();
                   })),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _openTodoForm(Todo(todos.scope), () => fetchAndSetTodos(todos));
-            },
+            onPressed: () => TodoForm.pushOnContext(
+                context, () => fetchAndSetTodos(todos), Todo(todos.scope)),
             tooltip: 'Create Todo',
             child: Icon(Icons.add),
           ),
@@ -83,17 +82,12 @@ class _TodoListState extends State<TodoList> {
         trailing: Icon(todo.getIcon()),
         onTap: () {
           todos.setCurrentTodo(todo);
-          _openTodoForm(todo, () => fetchAndSetTodos(todos));
+          TodoForm.pushOnContext(context, () => fetchAndSetTodos(todos), todo);
         },
       ));
       widgets.add(Divider(color: Colors.blueGrey));
     });
     return widgets;
-  }
-
-  void _openTodoForm(Todo todo, Function callback) {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => TodoForm(callback, todo)));
   }
 
   Widget _getNoTodos() {
