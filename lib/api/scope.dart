@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart';
 import 'package:open_todos_flutter_frontend/api_service.dart';
 
@@ -66,16 +65,6 @@ class Scope {
         .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
-      }
-      throw json.decode(response.body)['message'];
-    });
-  }
-
-  static Future<List<Scope>> fetchScopes(APIService service) {
-    return service.get("${APIService.BACKEND_URL}/scope").then((response) {
-      if (response.statusCode == 200) {
-        List todos = json.decode(response.body);
-        return todos.map((todo) => Scope.fromJson(todo)).toList();
       }
       throw json.decode(response.body)['message'];
     });

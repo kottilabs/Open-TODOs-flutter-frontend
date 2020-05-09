@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
-import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
 
-import 'api/scope.dart';
-import 'todo_list.dart';
+import 'package:open_todos_flutter_frontend/api/scopes.dart';
+import 'package:open_todos_flutter_frontend/api/scope.dart';
+import 'package:open_todos_flutter_frontend/todo_list.dart';
+import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
 
 class ScopeList extends StatefulWidget {
   @override
@@ -14,24 +14,24 @@ class ScopeList extends StatefulWidget {
 class _ScopeListState extends State<ScopeList> {
   Future<List<Scope>> _futureScopes;
 
-  Future<List<Scope>> fetchScopes(APIService service) {
+  Future<List<Scope>> fetchAndSetScopes(Scopes scopes) {
     setState(() {
-      _futureScopes = Scope.fetchScopes(service);
+      _futureScopes = scopes.fetchScopes();
     });
     return _futureScopes;
   }
 
-  Future<void> _handleRefresh(APIService service) async {
-    await fetchScopes(service);
+  Future<void> _handleRefresh(Scopes scopes) async {
+    await fetchAndSetScopes(scopes);
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final apiService = context.watch<APIService>();
+    final scopes = context.watch<Scopes>();
     return LoginScreenBuilder(builder: (context) {
       if (_futureScopes == null) {
-        _futureScopes = Scope.fetchScopes(apiService);
+        _futureScopes = scopes.fetchScopes();
       }
       return Scaffold(
         appBar: AppBar(
@@ -48,10 +48,10 @@ class _ScopeListState extends State<ScopeList> {
                         ? RefreshIndicator(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child:
-                                  ListView(children: _getScopes(snapshot.data)),
+                              child: ListView(
+                                  children: _getScopeWidgets(snapshot.data, scopes)),
                             ),
-                            onRefresh: () => _handleRefresh(apiService))
+                            onRefresh: () => _handleRefresh(scopes))
                         : _getNoScopes();
                   }
                   return CircularProgressIndicator();
@@ -65,14 +65,16 @@ class _ScopeListState extends State<ScopeList> {
     });
   }
 
-  List<Widget> _getScopes(List<Scope> scopes) {
+  List<Widget> _getScopeWidgets(List<Scope> scopeList, Scopes scopes) {
     var widgets = List<Widget>();
-    scopes.forEach((scope) {
+    scopeList.forEach((scope) {
       widgets.add(ListTile(
         title: Text(scope.name),
         onTap: () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => TodoList(scope)));
+          scopes.setCurrentScope(scope);
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => TodoList(),
+          ));
         },
       ));
       widgets.add(Divider(color: Theme.of(context).accentColor));

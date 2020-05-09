@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:enum_to_string/enum_to_string.dart';
@@ -117,18 +116,6 @@ class Todo {
         .then((Response response) {
       if (response.statusCode == 200) {
         return Todo.fromJson(json.decode(response.body));
-      }
-      throw json.decode(response.body)['message'];
-    });
-  }
-
-  static Future<List<Todo>> fetchTodos(APIService service, Scope scope) {
-    return service
-        .get("${APIService.BACKEND_URL}/todo/${scope.id}")
-        .then((response) {
-      if (response.statusCode == 200) {
-        List todos = json.decode(response.body);
-        return todos.map((todo) => Todo.fromJson(todo)).toList();
       }
       throw json.decode(response.body)['message'];
     });
