@@ -18,12 +18,13 @@ class TodoDrawer extends StatelessWidget {
             builder: (context, scopesSnapshot) {
               List<Widget> children = [];
               if (scopesSnapshot.hasData) {
-                List<Scope> scopes = scopesSnapshot.data;
+                List<Scope> scopeList = scopesSnapshot.data;
                 children.add(DrawerHeader(
                     child: Text('Scopes',
                         style: Theme.of(context).textTheme.headline5)));
-                children.addAll(scopes.map((e) => ListTile(
+                children.addAll(scopeList.map((e) => ListTile(
                       title: Text(e.name),
+                      onTap: () => scopes.setCurrentScope(e),
                     )));
               } else if (!scopesSnapshot.hasError) {
                 children.add(ListTile(title: CircularProgressIndicator()));

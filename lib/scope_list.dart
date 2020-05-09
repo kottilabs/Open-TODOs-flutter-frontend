@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_todos_flutter_frontend/todo_drawer.dart';
 import 'package:provider/provider.dart';
 
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
@@ -37,6 +38,7 @@ class _ScopeListState extends State<ScopeList> {
         appBar: AppBar(
           title: const Text('Scopes'),
         ),
+        drawer: TodoDrawer(),
         body: Center(
             child: FutureBuilder<List<Scope>>(
                 future: _futureScopes,
