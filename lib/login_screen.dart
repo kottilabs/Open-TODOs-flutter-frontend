@@ -8,11 +8,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  FocusNode _passwordFocus;
+
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   GlobalKey<FormFieldState<String>> _nameKey =
       new GlobalKey<FormFieldState<String>>();
   GlobalKey<FormFieldState<String>> _passwordKey =
       new GlobalKey<FormFieldState<String>>();
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordFocus = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _passwordFocus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +35,23 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         leading: Container(),
         title: Text('Login'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (!_nameKey.currentState.validate()) {
+            return;
+          }
+          if (_passwordKey.currentState.value.isEmpty) {
+            _passwordFocus.requestFocus();
+            return;
+          }
+
+          if (_formKey.currentState.validate()) {
+            apiService.login(
+                _nameKey.currentState.value, _passwordKey.currentState.value);
+          }
+        },
+        child: Icon(Icons.navigate_next),
       ),
       body: Center(
         child: Padding(
@@ -31,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
+                  autofocus: true,
                   key: _nameKey,
                   decoration: const InputDecoration(
                     hintText: 'Username',
@@ -43,6 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 TextFormField(
+                  focusNode: _passwordFocus,
+                  obscureText: true,
                   key: _passwordKey,
                   decoration: const InputDecoration(
                     hintText: 'Password',
@@ -53,21 +87,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 32.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          apiService.login(_nameKey.currentState.value,
-                              _passwordKey.currentState.value);
-                        }
-                      },
-                      child: Text('Submit'),
-                    ),
-                  ),
                 ),
               ],
             ),

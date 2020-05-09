@@ -80,7 +80,11 @@ class APIService extends http.BaseClient with ChangeNotifier {
   void _setToken(String token) {
     _token.then((value) async {
       if (value == token) return;
-      await storage.write(key: 'token', value: token);
+      if(token == null) {
+        await storage.delete(key: 'token');
+      } else {
+        await storage.write(key: 'token', value: token);
+      }
       _token = Future.value(token);
       notifyListeners();
     });
