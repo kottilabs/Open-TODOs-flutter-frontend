@@ -55,6 +55,21 @@ class _TodoFormState extends State<TodoForm> {
           title:
               Text(widget.todo.isPersisted() ? 'Update Todo' : 'Create Todo'),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            if (_formKey.currentState.validate()) {
+              final todo = widget.todo;
+              todo.name = _nameKey.currentState.value;
+              todo.description = _descriptionKey.currentState.value;
+              todo.state = statusValue;
+
+              await todo.save(apiService);
+              Navigator.pop(context);
+              this.widget.callback();
+            }
+          },
+          child: Icon(widget.todo.isPersisted() ? Icons.edit : Icons.add),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -64,6 +79,7 @@ class _TodoFormState extends State<TodoForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
+                    autofocus: true,
                     key: _nameKey,
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -103,28 +119,6 @@ class _TodoFormState extends State<TodoForm> {
                                   EnumToString.parse(status))),
                             ))
                         .toList(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 32.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: RaisedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            final todo = widget.todo;
-                            todo.name = _nameKey.currentState.value;
-                            todo.description =
-                                _descriptionKey.currentState.value;
-                            todo.state = statusValue;
-
-                            await todo.save(apiService);
-                            Navigator.pop(context);
-                            this.widget.callback();
-                          }
-                        },
-                        child: Text('Submit'),
-                      ),
-                    ),
                   ),
                 ],
               ),

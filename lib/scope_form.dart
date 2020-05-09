@@ -44,6 +44,19 @@ class _ScopeFormState extends State<ScopeForm> {
           title: Text(
               widget.scope.isPersisted() ? 'Update Scope' : 'Create Scope'),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            if (_formKey.currentState.validate()) {
+              final scope = widget.scope;
+              scope.name = _nameKey.currentState.value;
+
+              await scope.save(apiService);
+              Navigator.pop(context);
+              this.widget.callback();
+            }
+          },
+          child: Icon(widget.scope.isPersisted() ? Icons.edit : Icons.add),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -53,6 +66,7 @@ class _ScopeFormState extends State<ScopeForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
+                    autofocus: true,
                     key: _nameKey,
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -64,25 +78,6 @@ class _ScopeFormState extends State<ScopeForm> {
                       }
                       return null;
                     },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 32.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: RaisedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            final scope = widget.scope;
-                            scope.name = _nameKey.currentState.value;
-
-                            await scope.save(apiService);
-                            Navigator.pop(context);
-                            this.widget.callback();
-                          }
-                        },
-                        child: Text('Submit'),
-                      ),
-                    ),
                   ),
                 ],
               ),
