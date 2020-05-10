@@ -1,3 +1,4 @@
 {
-    "default_backend_url": "https://your.sample.org/endpoint/api"
+    "default_backend_url": "https://your.sample.org/endpoint/api",
+    "force_https": true
   }

@@ -27,6 +27,11 @@ class APIService extends http.BaseClient with ChangeNotifier {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    if (GlobalConfiguration().getBool('force_https') &&
+        request.url.scheme != "https") {
+      return Future.value(null);
+    }
+
     return _token.then((token) {
       if (token != null) {
         request.headers['authorization'] = 'Bearer $token';
