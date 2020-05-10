@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
 import 'package:provider/provider.dart';
 
-import 'package:open_todos_flutter_frontend/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
 import 'package:open_todos_flutter_frontend/api/scope.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 
 class ScopeForm extends StatefulWidget {
   final Function callback;

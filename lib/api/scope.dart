@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
 
 class Scope {
   String id;
@@ -46,8 +46,8 @@ class Scope {
     map.remove(ID_KEY);
     final body = json.encode(map);
     return service
-        .post("${APIService.BACKEND_URL}/scope",
-            body: body, headers: APIService.headers)
+        .post("${service.backendUrl}/scope",
+            body: body, headers: service.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));
@@ -60,8 +60,8 @@ class Scope {
     var map = this.toMap();
     final body = json.encode(map);
     return service
-        .put("${APIService.BACKEND_URL}/scope/$id",
-            body: body, headers: APIService.headers)
+        .put("${service.backendUrl}/scope/$id",
+            body: body, headers: service.headers)
         .then((Response response) {
       if (response.statusCode == 200) {
         return Scope.fromJson(json.decode(response.body));

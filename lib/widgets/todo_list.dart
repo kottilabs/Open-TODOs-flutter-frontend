@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/api/todos.dart';
-import 'package:open_todos_flutter_frontend/todo_drawer.dart';
 import 'package:provider/provider.dart';
 
 import 'package:open_todos_flutter_frontend/api/todo.dart';
-import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
-import 'package:open_todos_flutter_frontend/todo_form.dart';
+import 'package:open_todos_flutter_frontend/api/todos.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
+import 'package:open_todos_flutter_frontend/widgets/todo_form.dart';
+import 'package:open_todos_flutter_frontend/widgets/todo_drawer.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList();

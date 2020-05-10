@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:global_configuration/global_configuration.dart';
 
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
 import 'package:open_todos_flutter_frontend/api/todos.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
-import 'package:open_todos_flutter_frontend/scope_list.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'package:open_todos_flutter_frontend/widgets/scope_list.dart';
 
-void main() => runApp(OpenTodos());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GlobalConfiguration().loadFromAsset("app_settings");
+  runApp(OpenTodos());
+}
 
 class OpenTodos extends StatelessWidget {
   @override

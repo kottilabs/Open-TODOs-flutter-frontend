@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/scope_form.dart';
 import 'package:provider/provider.dart';
 
 import 'package:open_todos_flutter_frontend/api/scope.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
+import 'package:open_todos_flutter_frontend/widgets/scope_form.dart';
 
 class TodoDrawer extends StatefulWidget {
   @override

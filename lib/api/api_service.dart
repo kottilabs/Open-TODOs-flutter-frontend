@@ -1,23 +1,27 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
+import 'package:global_configuration/global_configuration.dart';
 
 class APIService extends http.BaseClient with ChangeNotifier {
-  static const BACKEND_URL = '***REMOVED***';
-  static const headers = {
+  final headers = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
   };
-  static FlutterSecureStorage storage = new FlutterSecureStorage();
-  static final APIService _singleton = APIService._internal();
-  static Future<String> _token;
+
+  FlutterSecureStorage _storage = new FlutterSecureStorage();
+  Future<String> _token;
+  String backendUrl = GlobalConfiguration().getString("default_backend_url");
   APIService._internal();
   http.Client _httpClient = new http.Client();
 
+  static final APIService _singleton = APIService._internal();
+
   factory APIService() {
-    _token = storage.read(key: 'token');
+    if (_singleton._token == null) {
+      _singleton._token = _singleton._storage.read(key: 'token');
+    }
     return _singleton;
   }
 
@@ -80,10 +84,10 @@ class APIService extends http.BaseClient with ChangeNotifier {
   void _setToken(String token) {
     _token.then((value) async {
       if (value == token) return;
-      if(token == null) {
-        await storage.delete(key: 'token');
+      if (token == null) {
+        await _storage.delete(key: 'token');
       } else {
-        await storage.write(key: 'token', value: token);
+        await _storage.write(key: 'token', value: token);
       }
       _token = Future.value(token);
       notifyListeners();
@@ -94,7 +98,7 @@ class APIService extends http.BaseClient with ChangeNotifier {
     logOut();
 
     final body = json.encode({'username': username, 'password': password});
-    return post("${APIService.BACKEND_URL}/auth/login",
+    return post("$backendUrl/auth/login",
             body: body, headers: headers)
         .then((response) {
       if (response.statusCode == 200) {

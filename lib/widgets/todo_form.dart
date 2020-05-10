@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
-import 'package:provider/provider.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:basic_utils/basic_utils.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-import 'api/todo.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/todo.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 
 class TodoForm extends StatefulWidget {
   final Function callback;

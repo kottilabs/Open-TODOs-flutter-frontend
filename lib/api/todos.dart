@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:open_todos_flutter_frontend/api/scope.dart';
 import 'package:open_todos_flutter_frontend/api/todo.dart';
-import 'package:open_todos_flutter_frontend/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
 
 class Todos with ChangeNotifier {
   final Scope scope;
@@ -18,7 +18,7 @@ class Todos with ChangeNotifier {
       return Future.value([]);
     }
     return service
-        .get("${APIService.BACKEND_URL}/todo/${scope.id}")
+        .get("${service.backendUrl}/todo/${scope.id}")
         .then((response) {
       if (response.statusCode == 200) {
         List todos = json.decode(response.body);

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:open_todos_flutter_frontend/scope_form.dart';
-import 'package:open_todos_flutter_frontend/todo_drawer.dart';
 import 'package:provider/provider.dart';
 
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
 import 'package:open_todos_flutter_frontend/api/scope.dart';
-import 'package:open_todos_flutter_frontend/todo_list.dart';
-import 'package:open_todos_flutter_frontend/login_screen_builder.dart';
+import 'package:open_todos_flutter_frontend/widgets/todo_list.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
+import 'package:open_todos_flutter_frontend/widgets/scope_form.dart';
+import 'package:open_todos_flutter_frontend/widgets/todo_drawer.dart';
 
 class ScopeList extends StatefulWidget {
   @override

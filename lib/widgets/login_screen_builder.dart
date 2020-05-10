@@ -1,7 +1,8 @@
-import 'package:open_todos_flutter_frontend/api_service.dart';
-import 'package:open_todos_flutter_frontend/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen.dart';
 
 class LoginScreenBuilder extends Builder {
   const LoginScreenBuilder({
