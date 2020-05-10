@@ -98,8 +98,7 @@ class APIService extends http.BaseClient with ChangeNotifier {
     logOut();
 
     final body = json.encode({'username': username, 'password': password});
-    return post("$backendUrl/auth/login",
-            body: body, headers: headers)
+    return post("$backendUrl/auth/login", body: body, headers: headers)
         .then((response) {
       if (response.statusCode == 200) {
         _setToken(json.decode(response.body)["token"]);
@@ -114,6 +113,14 @@ class APIService extends http.BaseClient with ChangeNotifier {
   }
 
   void logOut() {
-    _setToken(null);
+    _token.then((token) {
+      if (token == null) {
+        return;
+      }
+      post("$backendUrl/auth/logout").then((response) {
+        if (response.statusCode == 200) {}
+        _setToken(null);
+      });
+    });
   }
 }
