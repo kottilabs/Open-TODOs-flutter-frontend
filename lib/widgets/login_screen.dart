@@ -54,45 +54,53 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         child: Icon(Icons.navigate_next),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  autofocus: true,
-                  key: _nameKey,
-                  decoration: const InputDecoration(
-                    hintText: 'Username',
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter a username';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  focusNode: _passwordFocus,
-                  obscureText: true,
-                  key: _passwordKey,
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: loginForm(),
           ),
-        ),
+          Text('x'),
+        ],
+      ),
+    );
+  }
+
+  Form loginForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextFormField(
+            autofocus: true,
+            key: _nameKey,
+            decoration: const InputDecoration(
+              hintText: 'Username',
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter a username';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            focusNode: _passwordFocus,
+            obscureText: true,
+            key: _passwordKey,
+            decoration: const InputDecoration(
+              hintText: 'Password',
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter a password';
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }

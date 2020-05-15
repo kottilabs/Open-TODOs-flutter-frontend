@@ -6,12 +6,14 @@ import 'package:open_todos_flutter_frontend/api/scope.dart';
 import 'package:open_todos_flutter_frontend/api/todo.dart';
 import 'package:open_todos_flutter_frontend/api/api_service.dart';
 
-class Todos with ChangeNotifier {
-  final Scope scope;
-  final APIService service;
-  Todos(this.service, this.scope, {this.currentTodo});
+import 'package:open_todos_flutter_frontend/globals.dart' as globals;
 
-  Todo currentTodo;
+class Todos with ChangeNotifier {
+  Scope scope;
+  APIService service;
+  Todo todo;
+
+  Todos(this.service, this.scope, {this.todo});
 
   Future<List<Todo>> fetchTodos() {
     if (scope == null) {
@@ -24,19 +26,22 @@ class Todos with ChangeNotifier {
         List todos = json.decode(response.body);
         return todos.map((todo) => Todo.fromJson(todo)).toList();
       }
-      throw json.decode(response.body)['message'];
+      globals.logAndThrowUnsuccessfulResponse(response);
+      return null;
     });
   }
 
-  void setCurrentTodo(Todo todo) {
-    currentTodo = todo;
-    notifyListeners();
+  void setScope(Scope scope) {
+    if (this.scope != scope) {
+      this.scope = scope;
+      notifyListeners();
+    }
   }
 
-  static Todo defaultTodo(Scope scope, Todo todo) {
-    if (todo == null || scope.id != todo.scopeId) {
-      return null;
+  void setTodo(Todo todo) {
+    if (this.todo != todo) {
+      this.todo = todo;
+      notifyListeners();
     }
-  return todo;
   }
 }

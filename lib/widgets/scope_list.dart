@@ -71,7 +71,7 @@ class _ScopeListState extends State<ScopeList> {
       widgets.add(ListTile(
         title: Text(scope.name),
         onTap: () {
-          scopes.setCurrentScope(scope);
+          scopes.setScope(scope);
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => TodoList(),
           ));

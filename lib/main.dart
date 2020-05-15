@@ -22,16 +22,23 @@ class OpenTodos extends StatelessWidget {
             create: (_) => APIService(),
           ),
           ChangeNotifierProxyProvider<APIService, Scopes>(
-            create: (_) => Scopes(APIService()),
-            update: (_, service, oldScopes) =>
-                Scopes(service, currentScope: oldScopes.currentScope),
-          ),
+              create: (_) => Scopes(APIService()),
+              update: (_, service, scopes) {
+                // to trigger notifyListeners() which is only accessible internally
+                // we call this setter with the current value
+                scopes.setScope(scopes.scope);
+                return scopes;
+              }),
           ChangeNotifierProxyProvider2<APIService, Scopes, Todos>(
             create: (_) => Todos(APIService(), null),
-            update: (_, service, scopes, oldTodos) => Todos(
-                service, scopes.currentScope,
-                currentTodo: Todos.defaultTodo(
-                    scopes.currentScope, oldTodos.currentTodo)),
+            update: (_, service, scopes, todos) {
+              todos.setScope(scopes.scope);
+              if (scopes.scope == null || scopes.scope.id != todos.scope.id) {
+                todos.setTodo(null);
+              }
+              todos.setScope(scopes.scope);
+              return todos;
+            },
           )
         ],
         child: MaterialApp(

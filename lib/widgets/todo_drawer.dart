@@ -51,7 +51,7 @@ class _TodoDrawerState extends State<TodoDrawer> {
                 children.addAll(scopeList.map((e) => ListTile(
                       title: Text(e.name),
                       onTap: () {
-                        scopes.setCurrentScope(e);
+                        scopes.setScope(e);
                         Navigator.pop(context);
                       },
                     )));

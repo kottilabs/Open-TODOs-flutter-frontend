@@ -81,7 +81,7 @@ class _TodoListState extends State<TodoList> {
         title: Text(todo.name),
         trailing: Icon(todo.getIcon()),
         onTap: () {
-          todos.setCurrentTodo(todo);
+          todos.setTodo(todo);
           TodoForm.pushOnContext(context, () => fetchAndSetTodos(todos), todo);
         },
       ));

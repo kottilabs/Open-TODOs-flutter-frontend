@@ -4,12 +4,13 @@ import 'package:flutter/foundation.dart';
 
 import 'package:open_todos_flutter_frontend/api/scope.dart';
 import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'package:open_todos_flutter_frontend/globals.dart' as globals;
 
 class Scopes with ChangeNotifier {
-  final APIService service;
-  Scopes(this.service, {this.currentScope});
+  APIService service;
+  Scopes(this.service, {this.scope});
 
-  Scope currentScope;
+  Scope scope;
 
   Future<List<Scope>> fetchScopes() {
     return service.get("${service.backendUrl}/scope").then((response) {
@@ -17,12 +18,15 @@ class Scopes with ChangeNotifier {
         List todos = json.decode(response.body);
         return todos.map((todo) => Scope.fromJson(todo)).toList();
       }
-      throw json.decode(response.body)['message'];
+      globals.logAndThrowUnsuccessfulResponse(response);
+      return null;
     });
   }
 
-  void setCurrentScope(Scope scope) {
-    currentScope = scope;
-    notifyListeners();
+  void setScope(Scope scope) {
+    if (this.scope != scope) {
+      this.scope = scope;
+      notifyListeners();
+    }
   }
 }
