@@ -38,53 +38,54 @@ class _ScopeFormState extends State<ScopeForm> {
   @override
   Widget build(BuildContext context) {
     final apiService = context.watch<APIService>();
-    return LoginScreenBuilder(builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-              widget.scope.isPersisted() ? 'Update Scope' : 'Create Scope'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            if (_formKey.currentState.validate()) {
-              final scope = widget.scope;
-              scope.name = _nameKey.currentState.value;
-
-              await scope.save(apiService);
-              Navigator.pop(context);
-              this.widget.callback();
-            }
-          },
-          child: Icon(widget.scope.isPersisted() ? Icons.edit : Icons.add),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  TextFormField(
-                    autofocus: true,
-                    key: _nameKey,
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Name',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a name';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+    return LoginScreenBuilder(
+        builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text(widget.scope.isPersisted()
+                    ? 'Update Scope'
+                    : 'Create Scope'),
               ),
-            ),
-          ),
-        ),
-      );
-    });
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    final scope = widget.scope;
+                    scope.name = _nameKey.currentState.value;
+
+                    await scope.save(apiService);
+                    Navigator.pop(context);
+                    this.widget.callback();
+                  }
+                },
+                child:
+                    Icon(widget.scope.isPersisted() ? Icons.edit : Icons.add),
+              ),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          autofocus: true,
+                          key: _nameKey,
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            hintText: 'Name',
+                          ),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter a name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ));
   }
 }

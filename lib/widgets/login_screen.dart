@@ -10,12 +10,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   FocusNode _passwordFocus;
-
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   GlobalKey<FormFieldState<String>> _nameKey =
       new GlobalKey<FormFieldState<String>>();
   GlobalKey<FormFieldState<String>> _passwordKey =
       new GlobalKey<FormFieldState<String>>();
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -37,33 +39,58 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: Container(),
         title: Text('Login'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (!_nameKey.currentState.validate()) {
-            return;
+      floatingActionButton: FutureBuilder(
+        future: apiService.loggedIn().then((loggedIn) {
+          if (loggedIn) {
+            _nameController.text = _passwordController.text = '';
+            Navigator.pushNamed(context, '/todos');
           }
-          if (_passwordKey.currentState.value.isEmpty) {
-            _passwordFocus.requestFocus();
-            return;
+          return loggedIn;
+        }),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.none &&
+              snapshot.connectionState != ConnectionState.done) {
+            return FloatingActionButton(
+              onPressed: null,
+              child: CircularProgressIndicator(),
+            );
           }
-
-          if (_formKey.currentState.validate()) {
-            apiService.login(
-                _nameKey.currentState.value, _passwordKey.currentState.value);
-          }
+          return buildContinueFloatingActionButton(apiService);
         },
-        child: Icon(Icons.navigate_next),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: loginForm(),
-          ),
-          Text('x'),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(child: Container(), flex: 309),
+            Divider(),
+            Expanded(child: loginForm(), flex: 191),
+          ],
+        ),
       ),
+    );
+  }
+
+  FloatingActionButton buildContinueFloatingActionButton(
+      APIService apiService) {
+    return FloatingActionButton(
+      onPressed: () {
+        if (!_nameKey.currentState.validate()) {
+          return;
+        }
+        if (_passwordKey.currentState.value.isEmpty) {
+          _passwordFocus.requestFocus();
+          return;
+        }
+
+        if (_formKey.currentState.validate()) {
+          apiService.login(
+              _nameKey.currentState.value, _passwordKey.currentState.value);
+        }
+      },
+      child: Icon(Icons.navigate_next),
     );
   }
 
@@ -76,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             autofocus: true,
             key: _nameKey,
+            controller: _nameController,
             decoration: const InputDecoration(
               hintText: 'Username',
             ),
@@ -87,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
             },
           ),
           TextFormField(
+            controller: _passwordController,
             focusNode: _passwordFocus,
             obscureText: true,
             key: _passwordKey,

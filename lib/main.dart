@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:open_todos_flutter_frontend/widgets/todos_list.dart';
 import 'package:provider/provider.dart';
 import 'package:global_configuration/global_configuration.dart';
 
 import 'package:open_todos_flutter_frontend/api/scopes.dart';
 import 'package:open_todos_flutter_frontend/api/todos.dart';
 import 'package:open_todos_flutter_frontend/api/api_service.dart';
-import 'package:open_todos_flutter_frontend/widgets/scope_list.dart';
+
+import 'widgets/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,16 +24,15 @@ class OpenTodos extends StatelessWidget {
             create: (_) => APIService(),
           ),
           ChangeNotifierProxyProvider<APIService, Scopes>(
-              create: (_) => Scopes(APIService()),
+              create: (_) => Scopes(),
               update: (_, service, scopes) {
-                // to trigger notifyListeners() which is only accessible internally
-                // we call this setter with the current value
-                scopes.setScope(scopes.scope);
+                scopes.setService(service);
                 return scopes;
               }),
           ChangeNotifierProxyProvider2<APIService, Scopes, Todos>(
-            create: (_) => Todos(APIService(), null),
+            create: (_) => Todos(),
             update: (_, service, scopes, todos) {
+              todos.setService(service);
               todos.setScope(scopes.scope);
               if (scopes.scope == null || scopes.scope.id != todos.scope.id) {
                 todos.setTodo(null);
@@ -47,7 +48,11 @@ class OpenTodos extends StatelessWidget {
             primaryColor: Colors.blue[900],
             accentColor: Colors.blue,
           ),
-          home: ScopeList(),
+          initialRoute: '/login',
+          routes: {
+            '/login': (context) => LoginScreen(),
+            '/todos': (context) => TodosList(),
+          },
         ));
   }
 }

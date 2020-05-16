@@ -13,8 +13,6 @@ class Todos with ChangeNotifier {
   APIService service;
   Todo todo;
 
-  Todos(this.service, this.scope, {this.todo});
-
   Future<List<Todo>> fetchTodos() {
     if (scope == null) {
       return Future.value([]);
@@ -31,17 +29,21 @@ class Todos with ChangeNotifier {
     });
   }
 
+  void setService(APIService service) {
+    if (this.service == service) return;
+    this.service = service;
+    notifyListeners();
+  }
+
   void setScope(Scope scope) {
-    if (this.scope != scope) {
-      this.scope = scope;
-      notifyListeners();
-    }
+    if (this.scope == scope) return;
+    this.scope = scope;
+    notifyListeners();
   }
 
   void setTodo(Todo todo) {
-    if (this.todo != todo) {
-      this.todo = todo;
-      notifyListeners();
-    }
+    if (this.todo == todo) return;
+    this.todo = todo;
+    notifyListeners();
   }
 }

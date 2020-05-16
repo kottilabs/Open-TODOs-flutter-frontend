@@ -4,33 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:global_configuration/global_configuration.dart';
 
+import 'package:open_todos_flutter_frontend/globals.dart' as globals;
+
 class APIService extends http.BaseClient with ChangeNotifier {
+  final String backendUrl =
+      GlobalConfiguration().getString("default_backend_url");
   final headers = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
   };
 
   FlutterSecureStorage _storage = new FlutterSecureStorage();
+
   Future<String> _token;
-  String backendUrl = GlobalConfiguration().getString("default_backend_url");
-  APIService._internal();
   http.Client _httpClient = new http.Client();
 
-  static final APIService _singleton = APIService._internal();
-
-  factory APIService() {
-    if (_singleton._token == null) {
-      _singleton._token = _singleton._storage.read(key: 'token');
-    }
-    return _singleton;
+  APIService() {
+    _token = _storage.read(key: 'token');
   }
 
   @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
     if (GlobalConfiguration().getBool('force_https') &&
         request.url.scheme != "https") {
+      globals.logger
+          .w("Request blocked becuase scheme was not https: $request");
       return Future.value(null);
     }
+
+    globals.logger.d(request);
 
     return _token.then((token) {
       if (token != null) {
@@ -53,6 +55,12 @@ class APIService extends http.BaseClient with ChangeNotifier {
   @override
   Future<http.Response> post(url,
       {Map<String, String> headers, body, Encoding encoding}) {
+    if (url == "$backendUrl/auth/logout") {
+      _token = Future.value(null);
+      notifyListeners();
+      _storeToken(null);
+      return super.post(url, headers: headers, body: body, encoding: encoding);
+    }
     return super
         .post(url, headers: headers, body: body, encoding: encoding)
         .then((response) {
@@ -86,46 +94,34 @@ class APIService extends http.BaseClient with ChangeNotifier {
     });
   }
 
-  void _setToken(String token) {
-    _token.then((value) async {
-      if (value == token) return;
-      if (token == null) {
-        await _storage.delete(key: 'token');
-      } else {
-        await _storage.write(key: 'token', value: token);
-      }
-      _token = Future.value(token);
-      notifyListeners();
-    });
+  String _storeToken(String token) {
+    if (token == null) {
+      _storage.delete(key: 'token');
+    } else {
+      _storage.write(key: 'token', value: token);
+    }
+    return token;
   }
 
-  Future<bool> login(String username, String password) {
-    logOut();
-
+  void login(String username, String password) {
     final body = json.encode({'username': username, 'password': password});
-    return post("$backendUrl/auth/login", body: body, headers: headers)
+    _token = post("$backendUrl/auth/login", body: body, headers: headers)
         .then((response) {
       if (response.statusCode == 200) {
-        _setToken(json.decode(response.body)["token"]);
-        return true;
+        return json.decode(response.body)["token"];
       }
-      return false;
-    });
+      return null;
+    }).then((value) => _storeToken(value));
+    notifyListeners();
   }
 
-  Future<bool> loggedIn() async {
-    return (await _token) != null;
+  Future<bool> loggedIn() {
+    return _token.then((token) {
+      return token != null;
+    });
   }
 
   void logOut() {
-    _token.then((token) {
-      if (token == null) {
-        return;
-      }
-      post("$backendUrl/auth/logout").then((response) {
-        if (response.statusCode == 200) {}
-        _setToken(null);
-      });
-    });
+    post("$backendUrl/auth/logout");
   }
 }

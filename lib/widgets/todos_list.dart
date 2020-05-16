@@ -6,15 +6,16 @@ import 'package:open_todos_flutter_frontend/api/todos.dart';
 import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 import 'package:open_todos_flutter_frontend/widgets/todo_form.dart';
 import 'package:open_todos_flutter_frontend/widgets/todo_drawer.dart';
+import 'package:open_todos_flutter_frontend/widgets/scopes_list_builder.dart';
 
-class TodoList extends StatefulWidget {
-  const TodoList();
+class TodosList extends StatefulWidget {
+  const TodosList();
 
   @override
-  _TodoListState createState() => _TodoListState();
+  _TodosListState createState() => _TodosListState();
 }
 
-class _TodoListState extends State<TodoList> {
+class _TodosListState extends State<TodosList> {
   Future<List<Todo>> _futureTodos;
 
   Future<List<Todo>> fetchAndSetTodos(Todos todos) {
@@ -29,7 +30,7 @@ class _TodoListState extends State<TodoList> {
     final todos = context.watch<Todos>();
     fetchAndSetTodos(todos);
     return LoginScreenBuilder(
-      builder: (context) {
+      builder: (context) => ScopesListBuilder(builder: (context) {
         return Scaffold(
           appBar: AppBar(
             title: Column(
@@ -69,7 +70,7 @@ class _TodoListState extends State<TodoList> {
             child: Icon(Icons.add),
           ),
         );
-      },
+      }),
     );
   }
 

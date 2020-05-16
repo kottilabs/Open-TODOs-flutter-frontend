@@ -26,15 +26,14 @@ class TodoForm extends StatefulWidget {
 }
 
 class _TodoFormState extends State<TodoForm> {
-  static final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  static final GlobalKey<FormFieldState<String>> _nameKey =
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormFieldState<String>> _nameKey =
       new GlobalKey<FormFieldState<String>>();
-  static final GlobalKey<FormFieldState<String>> _descriptionKey =
+  final GlobalKey<FormFieldState<String>> _descriptionKey =
       new GlobalKey<FormFieldState<String>>();
 
-  static final TextEditingController _nameController = TextEditingController();
-  static final TextEditingController _descriptionController =
-      TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Status statusValue;
 
@@ -49,83 +48,82 @@ class _TodoFormState extends State<TodoForm> {
   @override
   Widget build(BuildContext context) {
     final apiService = context.watch<APIService>();
-    return LoginScreenBuilder(builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          title:
-              Text(widget.todo.isPersisted() ? 'Update Todo' : 'Create Todo'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            if (_formKey.currentState.validate()) {
-              final todo = widget.todo;
-              todo.name = _nameKey.currentState.value;
-              todo.description = _descriptionKey.currentState.value;
-              todo.state = statusValue;
-
-              await todo.save(apiService);
-              Navigator.pop(context);
-              this.widget.callback();
-            }
-          },
-          child: Icon(widget.todo.isPersisted() ? Icons.edit : Icons.add),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  TextFormField(
-                    autofocus: true,
-                    key: _nameKey,
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Name',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    key: _descriptionKey,
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(
-                      hintText: 'Description',
-                    ),
-                  ),
-                  DropdownButton(
-                    iconSize: 48,
-                    underline: Container(
-                      height: 1,
-                      color: Theme.of(context).disabledColor,
-                    ),
-                    isExpanded: true,
-                    onChanged: (Status newValue) {
-                      setState(() {
-                        statusValue = newValue;
-                      });
-                    },
-                    value: statusValue,
-                    items: Status.values
-                        .map((status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(StringUtils.capitalize(
-                                  EnumToString.parse(status))),
-                            ))
-                        .toList(),
-                  ),
-                ],
+    return LoginScreenBuilder(
+        builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text(
+                    widget.todo.isPersisted() ? 'Update Todo' : 'Create Todo'),
               ),
-            ),
-          ),
-        ),
-      );
-    });
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    final todo = widget.todo;
+                    todo.name = _nameKey.currentState.value;
+                    todo.description = _descriptionKey.currentState.value;
+                    todo.state = statusValue;
+
+                    await todo.save(apiService);
+                    Navigator.pop(context);
+                    this.widget.callback();
+                  }
+                },
+                child: Icon(widget.todo.isPersisted() ? Icons.edit : Icons.add),
+              ),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          autofocus: true,
+                          key: _nameKey,
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            hintText: 'Name',
+                          ),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter a name';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          key: _descriptionKey,
+                          controller: _descriptionController,
+                          decoration: const InputDecoration(
+                            hintText: 'Description',
+                          ),
+                        ),
+                        DropdownButton(
+                          iconSize: 48,
+                          underline: Container(
+                            height: 1,
+                            color: Theme.of(context).disabledColor,
+                          ),
+                          isExpanded: true,
+                          onChanged: (Status newValue) {
+                            setState(() {
+                              statusValue = newValue;
+                            });
+                          },
+                          value: statusValue,
+                          items: Status.values
+                              .map((status) => DropdownMenuItem(
+                                    value: status,
+                                    child: Text(StringUtils.capitalize(
+                                        EnumToString.parse(status))),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ));
   }
 }
