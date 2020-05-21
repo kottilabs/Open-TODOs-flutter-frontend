@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'api_service.dart';
 
 class Scope {
   String id;
@@ -15,6 +16,14 @@ class Scope {
     this.id = null;
     this.name = '';
     this.parentScope = parentScope;
+  }
+
+  Scope.fromResponse(Response response) {
+    if (response.statusCode == 200) {
+      Scope.fromJson(json.decode(response.body));
+    } else {
+      throw json.decode(response.body)['message'];
+    }
   }
 
   Scope.fromJson(Map<String, dynamic> json) {
@@ -62,12 +71,13 @@ class Scope {
     return service
         .put("${service.backendUrl}/scope/$id",
             body: body, headers: service.headers)
-        .then((Response response) {
-      if (response.statusCode == 200) {
-        return Scope.fromJson(json.decode(response.body));
-      }
-      throw json.decode(response.body)['message'];
-    });
+        .then((Response response) => Scope.fromResponse(response));
+  }
+
+  Future<Scope> delete(APIService service) {
+    return service
+        .delete("${service.backendUrl}/scope/$id", headers: service.headers)
+        .then((response) => Scope.fromResponse(response));
   }
 
   isPersisted() {

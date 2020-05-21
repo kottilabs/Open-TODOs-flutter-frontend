@@ -19,6 +19,34 @@ class _TodoDrawerState extends State<TodoDrawer> {
     return _scopesFuture;
   }
 
+  void _showDeleteDialog(
+      BuildContext context, APIService apiService, Scopes scopes, Scope scope) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text(
+                "This action will delete ${scope.name} and all associated Todos."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("Delete"),
+                onPressed: () {
+                  scope.delete(apiService).then((value) => fetchAndSetScopes(scopes));
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   Future<List<Scope>> _scopesFuture;
   @override
   Widget build(BuildContext context) {
@@ -47,12 +75,14 @@ class _TodoDrawerState extends State<TodoDrawer> {
                 ),
               ));
               children.add(Divider());
-              children.addAll(scopeList.map((e) => ListTile(
-                    title: Text(e.name),
+              children.addAll(scopeList.map((scope) => ListTile(
+                    title: Text(scope.name),
                     onTap: () {
-                      scopes.setScope(e);
+                      scopes.setScope(scope);
                       Navigator.pop(context);
                     },
+                    onLongPress: () =>
+                        _showDeleteDialog(context, apiService, scopes, scope),
                   )));
             } else if (!scopesSnapshot.hasError) {
               children.add(ListTile(
