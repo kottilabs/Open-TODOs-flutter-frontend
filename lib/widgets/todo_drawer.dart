@@ -52,7 +52,11 @@ class _TodoDrawerState extends State<TodoDrawer> {
                     },
                   )));
             } else if (!scopesSnapshot.hasError) {
-              children.add(ListTile(title: CircularProgressIndicator()));
+              children.add(ListTile(
+                title: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ));
             } else {
               // TODO: retry
             }
@@ -66,7 +70,10 @@ class _TodoDrawerState extends State<TodoDrawer> {
               onTap: () => apiService.logOut(),
             ));
 
-            return ListView(children: children);
+            return RefreshIndicator(
+              child: ListView(children: children),
+              onRefresh: () => fetchAndSetScopes(scopes),
+            );
           }),
     );
   }
