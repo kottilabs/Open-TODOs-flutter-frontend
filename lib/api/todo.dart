@@ -37,6 +37,14 @@ class Todo {
     return id != null;
   }
 
+  Todo.fromResponse(Response response) {
+    if (response.statusCode == 200) {
+      Todo.fromJson(json.decode(response.body));
+    } else {
+      throw json.decode(response.body)['message'];
+    }
+  }
+
   Todo.fromJson(Map<String, dynamic> json) {
     id = json[ID_KEY];
     name = json[NAME_KEY];
@@ -113,11 +121,12 @@ class Todo {
     return service
         .put("${service.backendUrl}/todo/$scopeId/$id",
             body: body, headers: service.headers)
-        .then((Response response) {
-      if (response.statusCode == 200) {
-        return Todo.fromJson(json.decode(response.body));
-      }
-      throw json.decode(response.body)['message'];
-    });
+        .then((response) => Todo.fromResponse(response));
+  }
+
+  Future<Todo> delete(APIService service) {
+    return service
+        .delete("${service.backendUrl}/todo/$scopeId/$id", headers: service.headers)
+        .then((response) => Todo.fromResponse(response));
   }
 }

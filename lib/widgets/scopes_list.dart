@@ -57,7 +57,7 @@ class _ScopesListState extends State<ScopesList> {
                       })),
               floatingActionButton: FloatingActionButton(
                 onPressed: () => ScopeForm.pushOnContext(
-                    context, () => fetchAndSetScopes(scopes), Scope(null)),
+                    context, (scope) => scopes.setScope(scope), Scope(null)),
                 tooltip: 'Create Scope',
                 child: Icon(Icons.add),
               ),

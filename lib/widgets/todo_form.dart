@@ -9,7 +9,7 @@ import 'package:open_todos_flutter_frontend/api/todo.dart';
 import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 
 class TodoForm extends StatefulWidget {
-  final Function callback;
+  final Function(Todo) callback;
   final Todo todo;
 
   TodoForm(this.callback, this.todo);
@@ -64,7 +64,7 @@ class _TodoFormState extends State<TodoForm> {
 
                     await todo.save(apiService);
                     Navigator.pop(context);
-                    this.widget.callback();
+                    this.widget.callback(todo);
                   }
                 },
                 child: Icon(widget.todo.isPersisted() ? Icons.edit : Icons.add),

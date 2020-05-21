@@ -12,22 +12,14 @@ class TodoDrawer extends StatefulWidget {
 }
 
 class _TodoDrawerState extends State<TodoDrawer> {
-  Future<List<Scope>> fetchAndSetScopes(Scopes scopes) {
-    setState(() {
-      _scopesFuture = scopes.fetchScopes();
-    });
-    return _scopesFuture;
-  }
-
-  void _showDeleteDialog(
-      BuildContext context, APIService apiService, Scopes scopes, Scope scope) {
+  void _showDeleteDialog(BuildContext context, Scopes scopes, Scope scope) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Are you sure?'),
             content: Text(
-                "This action will delete ${scope.name} and all associated Todos."),
+                "This action will delete Scope ${scope.name} and all associated Todos."),
             actions: <Widget>[
               new FlatButton(
                 child: new Text("Cancel"),
@@ -38,7 +30,7 @@ class _TodoDrawerState extends State<TodoDrawer> {
               new FlatButton(
                 child: new Text("Delete"),
                 onPressed: () {
-                  scope.delete(apiService).then((value) => fetchAndSetScopes(scopes));
+                  scopes.deleteScope(scope);
                   Navigator.of(context).pop();
                 },
               ),
@@ -47,17 +39,13 @@ class _TodoDrawerState extends State<TodoDrawer> {
         });
   }
 
-  Future<List<Scope>> _scopesFuture;
   @override
   Widget build(BuildContext context) {
-    final scopes = context.watch<Scopes>();
-    if (_scopesFuture == null) {
-      _scopesFuture = scopes.fetchScopes();
-    }
     final apiService = context.watch<APIService>();
+    final scopes = context.watch<Scopes>();
     return Drawer(
       child: FutureBuilder(
-          future: _scopesFuture,
+          future: scopes.fetchScopes(),
           builder: (context, scopesSnapshot) {
             List<Widget> children = [];
             if (scopesSnapshot.hasData) {
@@ -69,8 +57,8 @@ class _TodoDrawerState extends State<TodoDrawer> {
                       style: Theme.of(context).textTheme.headline5),
                   trailing: IconButton(
                     icon: Icon(Icons.add),
-                    onPressed: () => ScopeForm.pushOnContext(
-                        context, () => fetchAndSetScopes(scopes), Scope(null)),
+                    onPressed: () => ScopeForm.pushOnContext(context,
+                        (newScope) => scopes.setScope(newScope), Scope(null)),
                   ),
                 ),
               ));
@@ -81,8 +69,9 @@ class _TodoDrawerState extends State<TodoDrawer> {
                       scopes.setScope(scope);
                       Navigator.pop(context);
                     },
+                    selected: scope == scopes.scope,
                     onLongPress: () =>
-                        _showDeleteDialog(context, apiService, scopes, scope),
+                        _showDeleteDialog(context, scopes, scope),
                   )));
             } else if (!scopesSnapshot.hasError) {
               children.add(ListTile(
@@ -105,7 +94,7 @@ class _TodoDrawerState extends State<TodoDrawer> {
 
             return RefreshIndicator(
               child: ListView(children: children),
-              onRefresh: () => fetchAndSetScopes(scopes),
+              onRefresh: () => scopes.refresh(),
             );
           }),
     );

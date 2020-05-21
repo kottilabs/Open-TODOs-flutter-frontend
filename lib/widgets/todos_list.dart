@@ -7,6 +7,7 @@ import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 import 'package:open_todos_flutter_frontend/widgets/todo_form.dart';
 import 'package:open_todos_flutter_frontend/widgets/todo_drawer.dart';
 import 'package:open_todos_flutter_frontend/widgets/scopes_list_builder.dart';
+import 'package:open_todos_flutter_frontend/widgets/scope_form.dart';
 
 class TodosList extends StatefulWidget {
   const TodosList();
@@ -16,19 +17,36 @@ class TodosList extends StatefulWidget {
 }
 
 class _TodosListState extends State<TodosList> {
-  Future<List<Todo>> _futureTodos;
-
-  Future<List<Todo>> fetchAndSetTodos(Todos todos) {
-    setState(() {
-      _futureTodos = todos.fetchTodos();
-    });
-    return _futureTodos;
+  void _showDeleteDialog(BuildContext context, Todos todos, Todo todo) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text(
+                "This action will delete Todo ${todo.name}."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("Delete"),
+                onPressed: () {
+                  todos.deleteTodo(todo);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     final todos = context.watch<Todos>();
-    fetchAndSetTodos(todos);
     return LoginScreenBuilder(
       builder: (context) => ScopesListBuilder(builder: (context) {
         return Scaffold(
@@ -42,11 +60,17 @@ class _TodosListState extends State<TodosList> {
                 Text(todos.scope.name, textScaleFactor: 1.7 * 0.382)
               ],
             ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => ScopeForm.pushOnContext(context, (scope) => todos.setScope(scope), todos.scope),
+              ),
+            ],
           ),
           drawer: TodoDrawer(),
           body: Center(
               child: FutureBuilder<List<Todo>>(
-                  future: _futureTodos,
+                  future: todos.fetchTodos(),
                   builder: (_, snapshot) {
                     if (snapshot.hasError) {
                       return Text("${snapshot.error}");
@@ -58,14 +82,14 @@ class _TodosListState extends State<TodosList> {
                                 child: ListView(
                                     children: _getTodos(snapshot.data, todos)),
                               ),
-                              onRefresh: () => fetchAndSetTodos(todos))
+                              onRefresh: () => todos.refresh())
                           : _getNoTodos();
                     }
                     return CircularProgressIndicator();
                   })),
           floatingActionButton: FloatingActionButton(
             onPressed: () => TodoForm.pushOnContext(
-                context, () => fetchAndSetTodos(todos), Todo(todos.scope)),
+                context, (createdTodo) => todos.setTodo(createdTodo), Todo(todos.scope)),
             tooltip: 'Create Todo',
             child: Icon(Icons.add),
           ),
@@ -83,8 +107,9 @@ class _TodosListState extends State<TodosList> {
         trailing: Icon(todo.getIcon()),
         onTap: () {
           todos.setTodo(todo);
-          TodoForm.pushOnContext(context, () => fetchAndSetTodos(todos), todo);
+          TodoForm.pushOnContext(context, (editedTodo) => todos.setTodo(editedTodo), todo);
         },
+        onLongPress: () => _showDeleteDialog(context, todos, todo),
       ));
       widgets.add(Divider(color: Colors.blueGrey));
     });

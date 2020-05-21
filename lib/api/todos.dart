@@ -36,14 +36,21 @@ class Todos with ChangeNotifier {
   }
 
   void setScope(Scope scope) {
-    if (this.scope == scope) return;
     this.scope = scope;
     notifyListeners();
   }
 
   void setTodo(Todo todo) {
-    if (this.todo == todo) return;
     this.todo = todo;
     notifyListeners();
+  }
+
+  Future<void> refresh() {
+    notifyListeners();
+    return Future.value();
+  }
+
+  Future<Todo> deleteTodo(Todo todo) {
+    return todo.delete(service).whenComplete(() => notifyListeners());
   }
 }

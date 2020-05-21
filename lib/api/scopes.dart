@@ -24,14 +24,21 @@ class Scopes with ChangeNotifier {
   }
 
   void setService(APIService service) {
-    if (this.service == service) return;
     this.service = service;
     notifyListeners();
   }
 
   void setScope(Scope scope) {
-    if (this.scope == scope) return;
     this.scope = scope;
     notifyListeners();
+  }
+
+  Future<Scope> deleteScope(Scope scope) {
+    return scope.delete(service).whenComplete(() => notifyListeners());
+  }
+
+  Future<void> refresh() {
+    notifyListeners();
+    return Future.value();
   }
 }

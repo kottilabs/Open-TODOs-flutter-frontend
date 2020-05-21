@@ -6,7 +6,7 @@ import 'package:open_todos_flutter_frontend/api/scope.dart';
 import 'package:open_todos_flutter_frontend/widgets/login_screen_builder.dart';
 
 class ScopeForm extends StatefulWidget {
-  final Function callback;
+  final Function(Scope) callback;
   final Scope scope;
 
   ScopeForm(this.callback, this.scope);
@@ -53,7 +53,7 @@ class _ScopeFormState extends State<ScopeForm> {
 
                     await scope.save(apiService);
                     Navigator.pop(context);
-                    this.widget.callback();
+                    this.widget.callback(scope);
                   }
                 },
                 child:
