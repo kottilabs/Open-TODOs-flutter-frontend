@@ -5,7 +5,20 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:open_todos_flutter_frontend/main.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+
+import 'package:open_todos_flutter_frontend/widgets/todos_list.dart';
+import 'package:open_todos_flutter_frontend/api/api_service.dart';
+import 'package:open_todos_flutter_frontend/api/scopes.dart';
+import 'package:open_todos_flutter_frontend/api/todos.dart';
+import 'package:open_todos_flutter_frontend/widgets/login_screen.dart';
 
 void main() {
+  testWidgets(
+      'Shows login scren when trying to access TodosList without being logged id',
+      (WidgetTester tester) async {
+        assert(true);
+  });
 }

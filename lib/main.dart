@@ -42,17 +42,28 @@ class OpenTodos extends StatelessWidget {
             },
           )
         ],
-        child: MaterialApp(
-          title: 'Todos',
-          theme: ThemeData(
-            primaryColor: Colors.blue[900],
-            accentColor: Colors.blue,
-          ),
-          initialRoute: '/login',
-          routes: {
-            '/login': (context) => LoginScreen(),
-            '/todos': (context) => TodosList(),
-          },
-        ));
+        child: OpenTodosApp());
+  }
+}
+
+class OpenTodosApp extends StatelessWidget {
+  const OpenTodosApp({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Todos',
+      theme: ThemeData(
+        primaryColor: Colors.blue[900],
+        accentColor: Colors.blue,
+      ),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/todos': (context) => TodosList(),
+      },
+    );
   }
 }
