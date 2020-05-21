@@ -1,5 +1,7 @@
 # Open-TODOs Flutter Frontend
 
+[![Build Status](https://app.bitrise.io/app/83d62964b03a0708/status.svg?token=IiyP0Qmg0SOooSgpQYcGog&branch=master)](https://app.bitrise.io/app/83d62964b03a0708)
+
 This is the flutter app to interact with the [Open-TODOs backend](https://github.com/kottilabs/Open-TODOs).
 
 ## Getting Started
