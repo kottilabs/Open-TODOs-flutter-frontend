@@ -34,14 +34,17 @@ class _TodoDrawerState extends State<TodoDrawer> {
             List<Widget> children = [];
             if (scopesSnapshot.hasData) {
               List<Scope> scopeList = scopesSnapshot.data;
-              children.add(DrawerHeader(
-                  child: Text('Scopes',
-                      style: Theme.of(context).textTheme.headline5)));
-              children.add(ListTile(
-                title: Text('Create scope'),
-                trailing: Icon(Icons.add),
-                onTap: () => ScopeForm.pushOnContext(
-                    context, () => fetchAndSetScopes(scopes), Scope(null)),
+              children.add(Container(
+                height: 46,
+                child: ListTile(
+                  title: Text('Scopes',
+                      style: Theme.of(context).textTheme.headline5),
+                  trailing: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () => ScopeForm.pushOnContext(
+                        context, () => fetchAndSetScopes(scopes), Scope(null)),
+                  ),
+                ),
               ));
               children.add(Divider());
               children.addAll(scopeList.map((e) => ListTile(
